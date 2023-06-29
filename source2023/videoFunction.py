@@ -1,6 +1,8 @@
 import imageio
 import numpy as np
 from PIL import Image
+from scipy.stats import entropy
+
 
 
 def openVideo(file):
@@ -30,3 +32,14 @@ def createGrayscaleVideo(frames):
     for frame in frames:
         grayscaleFrames.append(rgb2gray(frame))
     return np.array(grayscaleFrames)
+
+
+def entropy_score(error_frames):
+    values, counts = np.unique(error_frames, return_counts=True)
+    # print(f'Values: {values} and counts: {counts}')
+    probabilities = counts / len(error_frames)
+    # print(f'Probabilities: {probabilities}')
+    # entropy = - np.sum(probabilities * np.log2(probabilities))
+    # print(f'Entropy: {entropy}')
+    return entropy(probabilities)
+    # return entropy

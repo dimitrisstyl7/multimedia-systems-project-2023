@@ -1,5 +1,5 @@
-import imageio
-from source2023.videoFunctions import *
+from source2023.videoFunction import *
+from source2023.imageFunction import *
 import numpy as np
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
@@ -9,13 +9,26 @@ if __name__ == '__main__':
     frames, fps = openVideo(videoPath)
     print(f'The video has {len(frames)} frames, a height of {frames[0].shape[0]} pixels, a width of {frames[0].shape[1]} pixels and a framerate of {fps} frames per second.')
 
-    print(f'Frame before grayscale {frames[0]}')
-
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
 
-    print(f'Frame after grayscale {frames[0]}')
+    seqErrorImages = []
 
-    # print the first frame of the video as a jpg image in the source2023 folder
-    image = Image.fromarray(frames[0].astype(np.uint8))
-    image.save("firstFrame.jpg")
+    for P in range(1, len(frames)):
+        # Calculate the error image of the current frame
+        errorImage = calculateErrorImage(frames[P], frames[P - 1])
+
+        # Add the error image to the error frames list
+        seqErrorImages.append(errorImage)
+
+    print(f'error frames: {seqErrorImages}')
+    # Calculate the entropy of the error frames sequence
+    H = entropy_score(seqErrorImages)
+
+    print("Entropy score:", H)
+
+
+
+
+
+
