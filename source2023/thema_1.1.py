@@ -33,7 +33,9 @@ if __name__ == '__main__':
     # Calculate the entropy of the error frames sequence
     H = entropy_score(seqErrorImages)
 
-    print("Entropy of the original (grayscale) video is: ", H)
+    print("Entropy of the original video is: ", entropy_score(originalFrames))
+    print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+
 
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, fps, 'thema_1_1.avi')

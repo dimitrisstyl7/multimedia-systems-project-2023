@@ -20,7 +20,7 @@ def openVideo(file):
 
 
 def createVideoOutput(frames, fps, name):
-    writer = imageio.get_writer(name, fps=fps)
+    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=fps)
     for frame in frames:
         writer.append_data(frame)
     writer.close()
@@ -41,5 +41,4 @@ def createGrayscaleVideo(frames):
 
 def entropy_score(error_frames):
     values, counts = np.unique(error_frames, return_counts=True) # values: unique values of error_frames, counts: how many times each value appears
-    print(f'Values: {len(values)} and counts: {len(counts)}')
     return entropy(counts)
