@@ -2,6 +2,7 @@ import imageio
 import numpy as np
 from scipy.stats import entropy
 
+from source2023.imageFunction import convertToUint8
 
 
 def openVideo(file):
@@ -20,10 +21,11 @@ def openVideo(file):
 
 
 def createVideoOutput(frames, fps, name):
-    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=fps)
+    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=29.97)
     for frame in frames:
         writer.append_data(frame)
     writer.close()
+
 
 # Convert RGB image to grayscale
 def rgb2gray(rgb):
@@ -35,10 +37,28 @@ def rgb2gray(rgb):
 def createGrayscaleVideo(frames):
     grayscaleFrames = []
     for frame in frames:
-        grayscaleFrames.append(rgb2gray(frame))
+        grayscaleFrames.append(rgb2gray(convertToUint8(frame)))
     return np.array(grayscaleFrames)
 
 
 def entropy_score(error_frames):
-    values, counts = np.unique(error_frames, return_counts=True) # values: unique values of error_frames, counts: how many times each value appears
+    # values: unique values of error_frames, counts: how many times each value appears
+    values, counts = np.unique(error_frames, return_counts=True)
     return entropy(counts)
+
+
+def saveVideoInfo(seqErrorImages, videoSpecs):
+    """
+    Save the video properties to a binary file
+    """
+    seqErrorImages.tofile("../auxiliary2023/VideoProperties/" + 'thema_1_1_seqErrorFrames.bin')
+    videoSpecs.tofile("../auxiliary2023/VideoProperties/" + 'thema_1_1_videoSpecs.bin')
+
+
+def readVideoInfo():
+    """
+    Read the video properties from a binary file
+    """
+    seqErrorImages = np.fromfile("../auxiliary2023/VideoProperties/" + 'thema_1_1_seqErrorFrames.bin', dtype='uint8')
+    videoSpecs = np.fromfile("../auxiliary2023/VideoProperties/" + 'thema_1_1_videoSpecs.bin', dtype='uint64')
+    return seqErrorImages, videoSpecs
