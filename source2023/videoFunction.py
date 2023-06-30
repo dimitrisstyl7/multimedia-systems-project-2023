@@ -1,4 +1,5 @@
 import imageio
+import pickle
 import numpy as np
 from scipy.stats import entropy
 
@@ -21,9 +22,9 @@ def openVideo(file):
 
 
 def createVideoOutput(frames, fps, name):
-    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=29.97)
+    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=fps)
     for frame in frames:
-        writer.append_data(frame)
+        writer.append_data(convertToUint8(frame))
     writer.close()
 
 
@@ -37,7 +38,7 @@ def rgb2gray(rgb):
 def createGrayscaleVideo(frames):
     grayscaleFrames = []
     for frame in frames:
-        grayscaleFrames.append(rgb2gray(convertToUint8(frame)))
+        grayscaleFrames.append(rgb2gray(frame))
     return np.array(grayscaleFrames)
 
 
@@ -47,18 +48,22 @@ def entropy_score(error_frames):
     return entropy(counts)
 
 
-def saveVideoInfo(seqErrorImages, videoSpecs):
+def saveVideoInfo(seqErrorImages, nameSeq, videoSpecs, nameSpecs):
     """
     Save the video properties to a binary file
     """
-    seqErrorImages.tofile("../auxiliary2023/VideoProperties/" + 'thema_1_1_seqErrorFrames.bin')
-    videoSpecs.tofile("../auxiliary2023/VideoProperties/" + 'thema_1_1_videoSpecs.bin')
+    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'wb') as file:
+        pickle.dump(seqErrorImages, file)
+    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'wb') as file:
+        pickle.dump(videoSpecs, file)
 
 
-def readVideoInfo():
+def readVideoInfo(nameSeq, nameSpecs):
     """
     Read the video properties from a binary file
     """
-    seqErrorImages = np.fromfile("../auxiliary2023/VideoProperties/" + 'thema_1_1_seqErrorFrames.bin', dtype='uint8')
-    videoSpecs = np.fromfile("../auxiliary2023/VideoProperties/" + 'thema_1_1_videoSpecs.bin', dtype='uint64')
+    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'rb') as file:
+        seqErrorImages = pickle.load(file)
+    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'rb') as file:
+        videoSpecs = pickle.load(file)
     return seqErrorImages, videoSpecs

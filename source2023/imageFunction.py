@@ -4,7 +4,7 @@ from PIL import Image
 
 def saveImage(image, name):
     image = Image.fromarray(image.astype(np.uint8))
-    image.save(name)
+    image.save('../auxiliary2023/dump/' + name)
 
 
 def calculateErrorImage(image1, image2):
@@ -12,4 +12,4 @@ def calculateErrorImage(image1, image2):
 
 
 def convertToUint8(image):
-    return (image * 255).astype(np.uint8)
+    return image.astype(np.uint8)
