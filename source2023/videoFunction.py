@@ -1,6 +1,5 @@
 import imageio
 import numpy as np
-from PIL import Image
 from scipy.stats import entropy
 
 
@@ -20,6 +19,12 @@ def openVideo(file):
     return np.array(frames), fps
 
 
+def createVideoOutput(frames, fps, name):
+    writer = imageio.get_writer(name, fps=fps)
+    for frame in frames:
+        writer.append_data(frame)
+    writer.close()
+
 # Convert RGB image to grayscale
 def rgb2gray(rgb):
     # The ITU-R BT.709 (HDTV) standard for converting RGB to grayscale
@@ -35,11 +40,6 @@ def createGrayscaleVideo(frames):
 
 
 def entropy_score(error_frames):
-    values, counts = np.unique(error_frames, return_counts=True)
-    # print(f'Values: {values} and counts: {counts}')
-    probabilities = counts / len(error_frames)
-    # print(f'Probabilities: {probabilities}')
-    # entropy = - np.sum(probabilities * np.log2(probabilities))
-    # print(f'Entropy: {entropy}')
-    return entropy(probabilities)
-    # return entropy
+    values, counts = np.unique(error_frames, return_counts=True) # values: unique values of error_frames, counts: how many times each value appears
+    print(f'Values: {len(values)} and counts: {len(counts)}')
+    return entropy(counts)
