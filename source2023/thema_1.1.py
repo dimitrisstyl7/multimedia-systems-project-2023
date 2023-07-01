@@ -6,6 +6,9 @@ videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
 
 def videoEncoder():
+    """
+    Encode the original uncompressed video using Huffman encoding.
+    """
     # Read the video
     frames, fps = openVideo(videoPath)
     print(
@@ -79,6 +82,9 @@ def videoEncoder():
 
 
 def videoDecoder():
+    """
+    Decode the encoded video using the dictionary of the Huffman.
+    """
     framesNumber, videoSpecs = readVideoInfo('thema_1_1_seqErrorFrames.pkl', 'thema_1_1_videoSpecs.pkl')
 
     num_frames = int(videoSpecs[0])
