@@ -14,8 +14,8 @@ def videoEncoder():
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
 
-    # The grayscale original video
-    createVideoOutput(frames, fps, 'thema_1_1_originalGrayScaleVideo.avi')
+    # # The grayscale original video
+    # createVideoOutput(frames, fps, 'thema_1_1_originalGrayScaleVideo.avi')
 
     originalFrames = []
     seqErrorImages = []
@@ -23,10 +23,14 @@ def videoEncoder():
     # Add all the frames to the original frames list
     originalFrames.append(frames)
 
+    H = entropy_score(frames)
+
+    print("Entropy of the original grayscale video is: ", H)
+
     # Add the first frame to the error frames list (I frame)
     seqErrorImages.append(frames[0])
 
-    # Create the Encoding Differential Pulse Code Modulation - DPCM
+    # Add the rest of the frames to the error frames list (P(n+1) - P(n) -> frame)
     for P in range(1, len(frames)):
         # Calculate the error image of the current frame
         errorImage = calculateErrorImage(frames[P], frames[P - 1])
@@ -34,21 +38,44 @@ def videoEncoder():
         # Add the error image to the error frames list
         seqErrorImages.append(convertToUint8(errorImage))
 
+    # Convert the error frames list to a numpy array
     seqErrorImages = np.array(seqErrorImages, dtype='uint8')
-    #
+
+    # Save the video properties to a binary file
     videoSpecs = np.array([len(frames), frames[0].shape[0], frames[0].shape[1], fps], dtype='float64')
 
-    print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
+    # Huffman encoding
+    # Create a dictionary with the symbols and their probabilities
 
-    # Calculate the entropy of the error frames sequence
-    H = entropy_score(seqErrorImages)
-    print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+    symbols = np.unique(seqErrorImages, return_counts=True)  # Find the unique symbols and their counts
+    symbols = np.array(symbols).T  # Transpose the array
+    # symbols = symbols[symbols[:, 1].argsort()[::-1]]  # Sort the symbols by their probabilities
+    symbols = symbols[symbols[:, 0].argsort()]  # Sort the symbols by their values
+    symbols = symbols[symbols[:, 1] != 0]  # Remove the symbols with probability 0
+    # symbols[:, 1] = symbols[:, 1] / np.sum(symbols[:, 1])  # Normalize the probabilities
 
-    # Create the video of the error frames sequence
-    createVideoOutput(seqErrorImages, fps, 'thema_1_1_seqErrorFrames.avi')
+    # Create the Huffman tree
+    tree = huffmanTree(symbols)
 
-    # To help the decoder we will save the video properties
-    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')
+    # Create the Huffman codebook
+    codebook = huffmanCodebook(tree)
+
+    # Encode the error frames
+    encodedErrorFrames = huffmanEncode(seqErrorImages, codebook)
+
+    # Save the encoded error frames to a binary file
+    with open('../auxiliary2023/EncodedVideos/thema_1_1_encodedErrorFrames.pkl', 'wb') as file:
+        pickle.dump(encodedErrorFrames, file)
+
+    # # Calculate the entropy of the error frames sequence
+    # H = entropy_score(seqErrorImages)
+    # print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+    #
+    # # Create the video of the error frames sequence
+    # createVideoOutput(seqErrorImages, fps, 'thema_1_1_seqErrorFrames.avi')
+    #
+    # # To help the decoder we will save the video properties
+    # saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')
 
 
 def videoDecoder():
@@ -59,7 +86,8 @@ def videoDecoder():
     width = int(videoSpecs[2])
     loaded_fps = float(videoSpecs[3])
 
-    print(f'The video has {num_frames} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {loaded_fps} frames per second.')
+    print(
+        f'The video has {num_frames} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {loaded_fps} frames per second.')
 
     frames = np.reshape(framesNumber, (num_frames, height, width))
 
