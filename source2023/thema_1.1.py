@@ -1,7 +1,7 @@
-from source2023.videoFunction import *
 from source2023.imageFunction import *
 from source2023.huffman import *
 import numpy as np
+
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
@@ -31,10 +31,14 @@ def videoEncoder():
     # Add all the frames to the original frames list
     originalFrames.append(frames)
 
+    H = entropy_score(frames)
+
+    print("Entropy of the original grayscale video is: ", H)
+
     # Add the first frame to the error frames list (I frame)
     seqErrorImages.append(frames[0])
 
-    # Create the Encoding Differential Pulse Code Modulation - DPCM
+    # Add the rest of the frames to the error frames list (P(n+1) - P(n) -> frame)
     for P in range(1, len(frames)):
         # Calculate the error image of the current frame
         errorImage = calculateErrorImage(frames[P], frames[P - 1])
@@ -42,17 +46,24 @@ def videoEncoder():
         # Add the error image to the error frames list
         seqErrorImages.append(errorImage)
 
+    # Convert the error frames list to a numpy array
     seqErrorImages = np.array(seqErrorImages, dtype='uint8')
 
     print(seqErrorImages)
 
     videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
 
-    print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
+    print(f'The video has {len(seqErrorImages)} error frames.')
+    frame = seqErrorImages[131]
+    huffmanCompression(frame, frame.size)
 
-    # Calculate the entropy of the error frames sequence
-    H = entropy_score(seqErrorImages)
-    print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+
+def huffmanCompression(frame, N):
+    # Create a dictionary with the symbols and their probabilities
+    symbols = np.unique(frame, return_counts=True)  # Find the unique symbols and their counts
+
+    # Transpose the array to have the symbols in the first column and their counts in the second
+    tempSymbols = np.array(symbols).T.tolist()
 
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_1_seqErrorFrames.avi')
