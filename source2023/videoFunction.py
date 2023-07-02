@@ -33,7 +33,7 @@ def createVideoOutput(frames, video_properties, name):
     video_writer = cv2.VideoWriter("../auxiliary2023/OutputVideos/" + name, fourcc, video_properties[3], (video_properties[1], video_properties[2]))
     for frame in frames:
         gray_color_frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
-        video_writer.write(gray_color_frame)
+        video_writer.write(convertToUint8(gray_color_frame))
     video_writer.release()
 """
 # Convert RGB image to grayscale

@@ -16,7 +16,7 @@ def videoEncoder():
 
     # The grayscale original video
     createVideoOutput(frames, video_properties, 'thema_1_1_originalGrayScaleVideo.avi')
-    """
+
     originalFrames = []
     seqErrorImages = []
 
@@ -36,7 +36,7 @@ def videoEncoder():
 
     seqErrorImages = np.array(seqErrorImages, dtype='uint8')
     #
-    videoSpecs = np.array([len(frames), frames[0].shape[0], frames[0].shape[1], fps], dtype='float64')
+    videoSpecs = np.array([len(frames), video_properties[2], video_properties[1], video_properties[3]], dtype='float64')
 
     print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
 
@@ -45,26 +45,32 @@ def videoEncoder():
     print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
 
     # Create the video of the error frames sequence
-    createVideoOutput(seqErrorImages, fps, 'thema_1_1_seqErrorFrames.avi')
+    createVideoOutput(seqErrorImages, video_properties, 'thema_1_1_seqErrorFrames.avi')
 
     # To help the decoder we will save the video properties
-    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')"""
+    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')
 
 
 def videoDecoder():
     framesNumber, videoSpecs = readVideoInfo('thema_1_1_seqErrorFrames.pkl', 'thema_1_1_videoSpecs.pkl')
-
+    """
     num_frames = int(videoSpecs[0])
     height = int(videoSpecs[1])
     width = int(videoSpecs[2])
-    loaded_fps = float(videoSpecs[3])
+    loaded_fps = float(videoSpecs[3])"""
 
-    print(f'The video has {num_frames} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {loaded_fps} frames per second.')
+    video_properties = []
+    video_properties.append(int(videoSpecs[0]))
+    video_properties.append(int(videoSpecs[1]))
+    video_properties.append(int(videoSpecs[2]))
+    video_properties.append(float(videoSpecs[3]))
 
-    frames = np.reshape(framesNumber, (num_frames, height, width))
+    print(f'The video has {video_properties[0]} frames, a height of {video_properties[1]} pixels, a width of {video_properties[2]} pixels and a framerate of {video_properties[3]} frames per second.')
 
+    frames = np.reshape(framesNumber, (video_properties[0], video_properties[1], video_properties[2]))
+    """
     # Create the output video
-    createVideoOutput(frames, loaded_fps, 'thema_1_1_decodedVideo.avi')
+    createVideoOutput(frames, videoSpecs[3], 'thema_1_1_decodedVideo.avi')"""
 
     first_frame_flag = True
 
@@ -87,9 +93,9 @@ def videoDecoder():
 
     decodedFrames = np.array(decodedFrames, dtype='uint8')
 
-    createVideoOutput(decodedFrames, videoSpecs[3], 'thema_1_1_decodedVideo.avi')
+    createVideoOutput(decodedFrames, video_properties, 'thema_1_1_decodedVideo.avi')
 
 
 if __name__ == '__main__':
     videoEncoder()
-    #videoDecoder()
+    videoDecoder()
