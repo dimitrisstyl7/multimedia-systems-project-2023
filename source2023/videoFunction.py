@@ -1,69 +1,87 @@
-import imageio
+# import imageio
+import cv2
 import pickle
 import numpy as np
 from scipy.stats import entropy
 
-from source2023.imageFunction import convertToUint8
-
 
 def openVideo(file):
-    video = imageio.get_reader(file, 'ffmpeg')
-    fps = video.get_meta_data()['fps']
-    i = 0  # Frame counter
-    frames = []  # List of frames
+    """
+    Open the video and return the frames and the video properties
+    """
+    video = cv2.VideoCapture(file)
+    frames_num = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    video_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    video_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = video.get(cv2.CAP_PROP_FPS)
+    video_properties = []
+    video_properties.append(frames_num)
+    video_properties.append(video_width)
+    video_properties.append(video_height)
+    video_properties.append(fps)
+    frames = []
     while True:
-        try:
-            frames.append(video.get_data(i))
-            i += 1
-        except IndexError:
+        ret, frame = video.read()
+        if not ret:
             break
+        frames.append(frame)
+    video.release()
+    return np.array(frames), video_properties
 
-    return np.array(frames), fps
 
-
-def createVideoOutput(frames, fps, name):
-    writer = imageio.get_writer("../auxiliary2023/OutputVideos/" + name, fps=fps)
+def createVideoOutput(frames, width, height, fps, name):
+    """
+    Create the video output
+    """
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    video_writer = cv2.VideoWriter("../auxiliary2023/OutputVideos/" + name, fourcc, fps, (width, height))
     for frame in frames:
-        writer.append_data(convertToUint8(frame))
-    writer.close()
-
-
-# Convert RGB image to grayscale
-def rgb2gray(rgb):
-    # The ITU-R BT.709 (HDTV) standard for converting RGB to grayscale
-    return np.dot(rgb[..., :3], [0.2126, 0.7152, 0.0722])
+        gray_color_frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+        video_writer.write(gray_color_frame)
+    video_writer.release()
 
 
 # Create video to grayscale
 def createGrayscaleVideo(frames):
+    """
+    Convert the video to grayscale
+    """
     grayscaleFrames = []
     for frame in frames:
-        grayscaleFrames.append(rgb2gray(frame))
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        grayscaleFrames.append(gray_frame)
     return np.array(grayscaleFrames)
 
 
 def entropy_score(error_frames):
+    """
+    Calculate the entropy of the error frames sequence
+    """
     # values: unique values of error_frames, counts: how many times each value appears
     values, counts = np.unique(error_frames, return_counts=True)
     return entropy(counts)
 
 
-def saveVideoInfo(seqErrorImages, nameSeq, videoSpecs, nameSpecs):
+def saveEncodedVideo(data1, fileName1, data2, fileName2, data3, fileName3):
     """
     Save the video properties to a binary file
     """
-    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'wb') as file:
-        pickle.dump(seqErrorImages, file)
-    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'wb') as file:
-        pickle.dump(videoSpecs, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName1, 'wb') as file:
+        pickle.dump(data1, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName2, 'wb') as file:
+        pickle.dump(data2, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName3, 'wb') as file:
+        pickle.dump(data3, file)
 
 
-def readVideoInfo(nameSeq, nameSpecs):
+def readVideoInfo(fileName1, fileName2, fileName3):
     """
     Read the video properties from a binary file
     """
-    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'rb') as file:
-        seqErrorImages = pickle.load(file)
-    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'rb') as file:
-        videoSpecs = pickle.load(file)
-    return seqErrorImages, videoSpecs
+    with open('../auxiliary2023/VideoProperties/' + fileName1, 'rb') as file:
+        data1 = pickle.load(file)
+    with open('../auxiliary2023/VideoProperties/' + fileName2, 'rb') as file:
+        data2 = pickle.load(file)
+    with open('../auxiliary2023/VideoProperties/' + fileName3, 'rb') as file:
+        data3 = pickle.load(file)
+    return data1, data2, data3
