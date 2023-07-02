@@ -62,22 +62,26 @@ def entropy_score(error_frames):
     return entropy(counts)
 
 
-def saveVideoInfo(seqErrorImages, nameSeq, videoSpecs, nameSpecs):
+def saveEncodedVideo(data1, fileName1, data2, fileName2, data3, fileName3):
     """
     Save the video properties to a binary file
     """
-    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'wb') as file:
-        pickle.dump(seqErrorImages, file)
-    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'wb') as file:
-        pickle.dump(videoSpecs, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName1, 'wb') as file:
+        pickle.dump(data1, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName2, 'wb') as file:
+        pickle.dump(data2, file)
+    with open('../auxiliary2023/VideoProperties/' + fileName3, 'wb') as file:
+        pickle.dump(data3, file)
 
 
-def readVideoInfo(nameSeq, nameSpecs):
+def readVideoInfo(fileName1, fileName2, fileName3):
     """
     Read the video properties from a binary file
     """
-    with open('../auxiliary2023/VideoProperties/' + nameSeq, 'rb') as file:
-        seqErrorImages = pickle.load(file)
-    with open('../auxiliary2023/VideoProperties/' + nameSpecs, 'rb') as file:
-        videoSpecs = pickle.load(file)
-    return seqErrorImages, videoSpecs
+    with open('../auxiliary2023/VideoProperties/' + fileName1, 'rb') as file:
+        data1 = pickle.load(file)
+    with open('../auxiliary2023/VideoProperties/' + fileName2, 'rb') as file:
+        data2 = pickle.load(file)
+    with open('../auxiliary2023/VideoProperties/' + fileName3, 'rb') as file:
+        data3 = pickle.load(file)
+    return data1, data2, data3

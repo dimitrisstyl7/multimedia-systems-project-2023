@@ -1,5 +1,6 @@
 from source2023.videoFunction import *
 from source2023.imageFunction import *
+from source2023.huffman import *
 import numpy as np
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
@@ -42,7 +43,9 @@ def videoEncoder():
         seqErrorImages.append(errorImage)
 
     seqErrorImages = np.array(seqErrorImages, dtype='uint8')
-    #
+
+    print(seqErrorImages)
+
     videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
 
     print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
@@ -54,23 +57,45 @@ def videoEncoder():
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_1_seqErrorFrames.avi')
 
-    # To help the decoder we will save the video properties
-    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')
+    # Huffman encoding
+    # Create the Huffman tree
+    huffmanTree = createHuffmanTree(seqErrorImages)
+
+    # Create the Huffman table
+    huffmanTable = createHuffmanTable(huffmanTree)
+
+    # Encode the error frames sequence
+    encodedSeqErrorImages = encodeHuffman(seqErrorImages, huffmanTable)
+
+    # Save the encoded error frames sequence
+    saveEncodedVideo(encodedSeqErrorImages, 'thema_1_1_encodedSF.pkl', huffmanTable, 'thema_1_1_hT.pkl', videoSpecs,
+                     'thema_1_1_vS.pkl')
+    print("Encoded video saved successfully!")
 
 
 def videoDecoder():
     """
     Decode the video
     """
-    frames, videoSpecs = readVideoInfo('thema_1_1_seqErrorFrames.pkl', 'thema_1_1_videoSpecs.pkl')
+
+    encodedSeqErrorImages, huffmanTable, videoSpecs = readVideoInfo('thema_1_1_encodedSF.pkl', 'thema_1_1_hT.pkl',
+                                                                    'thema_1_1_vS.pkl')
 
     width = int(videoSpecs[1])
     height = int(videoSpecs[2])
     fps = float(videoSpecs[3])
 
-    print(f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {fps} frames per second.')
+    # Huffman decoding
+    # Decode the error frames sequence
+    frames = decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height)
 
-    # Set the I Frame
+    print(f'frames decoded!')
+
+    print(frames)
+    print(
+        f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {fps} frames per second.')
+
+    #decodedFrames = reconstructFrames(frames, frames[0])
     first_frame_flag = True
 
     decodedFrames = []
@@ -98,6 +123,5 @@ def videoDecoder():
 
 
 if __name__ == '__main__':
-
     videoEncoder()
     videoDecoder()
