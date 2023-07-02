@@ -8,7 +8,7 @@ def saveImage(image, name):
 
 
 def calculateErrorImage(image1, image2):
-    return np.subtract(image1, image2)  # np.abs() returns the absolute value of the argument
+    return np.subtract(image1, image2)
 
 
 def convertToUint8(image):

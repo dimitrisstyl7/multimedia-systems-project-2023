@@ -7,16 +7,16 @@ videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
 def videoEncoder():
     # Read the video
-    frames, fps = openVideo(videoPath)
+    frames, video_properties = openVideo(videoPath)
     print(
-        f'The video has {len(frames)} frames, a height of {frames[0].shape[0]} pixels, a width of {frames[0].shape[1]} pixels and a framerate of {fps} frames per second.')
+        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of {video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
 
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
 
     # The grayscale original video
-    createVideoOutput(frames, fps, 'thema_1_1_originalGrayScaleVideo.avi')
-
+    createVideoOutput(frames, video_properties, 'thema_1_1_originalGrayScaleVideo.avi')
+    """
     originalFrames = []
     seqErrorImages = []
 
@@ -48,7 +48,7 @@ def videoEncoder():
     createVideoOutput(seqErrorImages, fps, 'thema_1_1_seqErrorFrames.avi')
 
     # To help the decoder we will save the video properties
-    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')
+    saveVideoInfo(seqErrorImages, 'thema_1_1_seqErrorFrames.pkl', videoSpecs, 'thema_1_1_videoSpecs.pkl')"""
 
 
 def videoDecoder():
@@ -92,4 +92,4 @@ def videoDecoder():
 
 if __name__ == '__main__':
     videoEncoder()
-    videoDecoder()
+    #videoDecoder()
