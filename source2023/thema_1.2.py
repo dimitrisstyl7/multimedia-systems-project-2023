@@ -1,4 +1,5 @@
 from source2023.videoFunction import *
+from source2023.imageFunction import *
 import numpy as np
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
@@ -31,6 +32,28 @@ def videoEncoder():
     # Add the first frame to the error frames list (I frame)
     seqErrorImages.append(frames[0])
 
+    # Create the Encoding Differential Pulse Code Modulation - DPCM
+    for P in range(1, len(frames)):
+        # Calculate the error image of the current frame
+        errorImage = calculateErrorImage(frames[P], frames[P - 1])
+
+        # Add the error image to the error frames list
+        seqErrorImages.append(errorImage)
+
+    seqErrorImages = np.array(seqErrorImages, dtype='uint8')
+
+    print(seqErrorImages)
+
+    videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
+
+    print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
+
+    # Calculate the entropy of the error frames sequence
+    H = entropy_score(seqErrorImages)
+    print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+
+    # Create the video of the error frames sequence
+    createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorFrames.avi')
 
 
 if __name__ == '__main__':
