@@ -4,6 +4,8 @@ import pickle
 import numpy as np
 from scipy.stats import entropy
 
+from source2023.imageFunction import calculateErrorImage
+
 
 def openVideo(file):
     """
@@ -52,6 +54,25 @@ def createGrayscaleVideo(frames):
         grayscaleFrames.append(gray_frame)
     return np.array(grayscaleFrames)
 
+def calculateSeqErrorImages(frames):
+    """
+    Calculate the error frames sequence
+    """
+
+    seqErrorImages = []
+
+    # Add the first frame to the error frames list (I frame)
+    seqErrorImages.append(frames[0])
+
+    # Create the Encoding Differential Pulse Code Modulation - DPCM
+    for P in range(1, len(frames)):
+        # Calculate the error image of the current frame
+        errorImage = calculateErrorImage(frames[P], frames[P - 1])
+
+        # Add the error image to the error frames list
+        seqErrorImages.append(errorImage)
+
+    return np.array(seqErrorImages, dtype='uint8')
 
 def entropy_score(error_frames):
     """
