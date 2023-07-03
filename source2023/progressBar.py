@@ -1,10 +1,9 @@
-import math
 import colorama
 
 
 def progressBar(progress, total, message='Progress:', endMessage='Completed', color=colorama.Fore.LIGHTYELLOW_EX):
     """
-    Print a progress bar
+        Print a progress bar
     """
     percent = 100 * (progress / total)
     bar_length = 50
