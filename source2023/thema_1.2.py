@@ -1,18 +1,18 @@
-from source2023.hierarchicalSearch import hierarchicalSearch
-from source2023.videoFunction import *
-from source2023.imageFunction import *
-import numpy as np
+from hierarchicalSearch import hierarchicalSearch
+from videoFunction import *
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
+
 def videoEncoder():
     """
-    Encode the video
+        Encode the video
     """
     # Read the video
     frames, video_properties = openVideo(videoPath)
     print(
-        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of {video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
+        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of'
+        f'{video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
 
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
@@ -20,6 +20,8 @@ def videoEncoder():
     width = video_properties[1]
     height = video_properties[2]
     fps = video_properties[3]
+
+    hierarchicalSearch(frames, width, height)
 
     # The grayscale original video
     createVideoOutput(frames, width, height, fps, 'thema_1_2_originalGrayScaleVideo.avi')
@@ -56,19 +58,20 @@ def videoEncoder():
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorFrames.avi')
 
-    motion_vectors, motion_compensated_frames = hierarchicalSearch(frames, width, height)
+    # motion_vectors, motion_compensated_frames = hierarchicalSearch(frames, width, height)
+    #
+    # saveEncodedVideo(motion_vectors, 'thema_1_2_mV.pkl', motion_compensated_frames, 'thema_1_2_mCF.pkl', videoSpecs,
+    #                  'thema_1_2_vS.pkl')
 
-    saveEncodedVideo(motion_vectors, 'thema_1_2_mV.pkl', motion_compensated_frames, 'thema_1_2_mCF.pkl', videoSpecs, 'thema_1_2_vS.pkl')
 
 def videoDecoder():
     """
-    Decode the video
+        Decode the video
     """
     pass
 
-    motion_vectors, motion_compensated_frames, videoSpecs = readVideoInfo('thema_1_2_mV.pkl', 'thema_1_2_mCF.pkl', 'thema_1_2_vS.pkl')
-
-
+    motion_vectors, motion_compensated_frames, videoSpecs = readVideoInfo('thema_1_2_mV.pkl', 'thema_1_2_mCF.pkl',
+                                                                          'thema_1_2_vS.pkl')
 
 
 if __name__ == '__main__':
