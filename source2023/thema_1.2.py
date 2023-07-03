@@ -1,3 +1,4 @@
+from source2023.hierarchicalSearch import hierarchicalSearch
 from source2023.videoFunction import *
 from source2023.imageFunction import *
 import numpy as np
@@ -55,6 +56,21 @@ def videoEncoder():
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorFrames.avi')
 
+    motion_vectors, motion_compensated_frames = hierarchicalSearch(frames, width, height)
+
+    saveEncodedVideo(motion_vectors, 'thema_1_2_mV.pkl', motion_compensated_frames, 'thema_1_2_mCF.pkl', videoSpecs, 'thema_1_2_vS.pkl')
+
+def videoDecoder():
+    """
+    Decode the video
+    """
+    pass
+
+    motion_vectors, motion_compensated_frames, videoSpecs = readVideoInfo('thema_1_2_mV.pkl', 'thema_1_2_mCF.pkl', 'thema_1_2_vS.pkl')
+
+
+
 
 if __name__ == '__main__':
     videoEncoder()
+    # videoDecoder()
