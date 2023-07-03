@@ -1,26 +1,22 @@
-# import imageio
-import cv2
 import pickle
+
+import cv2
 import numpy as np
 from scipy.stats import entropy
 
-from source2023.imageFunction import calculateErrorImage
+from imageFunction import calculateErrorImage
 
 
 def openVideo(file):
     """
-    Open the video and return the frames and the video properties
+        Open the video and return the frames and the video properties
     """
     video = cv2.VideoCapture(file)
     frames_num = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     video_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     video_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = video.get(cv2.CAP_PROP_FPS)
-    video_properties = []
-    video_properties.append(frames_num)
-    video_properties.append(video_width)
-    video_properties.append(video_height)
-    video_properties.append(fps)
+    video_properties = [frames_num, video_width, video_height, fps]
     frames = []
     while True:
         ret, frame = video.read()
@@ -33,7 +29,7 @@ def openVideo(file):
 
 def createVideoOutput(frames, width, height, fps, name):
     """
-    Create the video output
+        Create the video output
     """
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     video_writer = cv2.VideoWriter("../auxiliary2023/OutputVideos/" + name, fourcc, fps, (width, height))
@@ -46,7 +42,7 @@ def createVideoOutput(frames, width, height, fps, name):
 # Create video to grayscale
 def createGrayscaleVideo(frames):
     """
-    Convert the video to grayscale
+        Convert the video to grayscale
     """
     grayscaleFrames = []
     for frame in frames:
@@ -54,15 +50,14 @@ def createGrayscaleVideo(frames):
         grayscaleFrames.append(gray_frame)
     return np.array(grayscaleFrames)
 
+
 def calculateSeqErrorImages(frames):
     """
-    Calculate the error frames sequence
+        Calculate the error frames sequence
     """
 
-    seqErrorImages = []
-
     # Add the first frame to the error frames list (I frame)
-    seqErrorImages.append(frames[0])
+    seqErrorImages = [frames[0]]
 
     # Create the Encoding Differential Pulse Code Modulation - DPCM
     for P in range(1, len(frames)):
@@ -74,9 +69,10 @@ def calculateSeqErrorImages(frames):
 
     return np.array(seqErrorImages, dtype='uint8')
 
+
 def entropy_score(error_frames):
     """
-    Calculate the entropy of the error frames sequence
+        Calculate the entropy of the error frames sequence
     """
     # values: unique values of error_frames, counts: how many times each value appears
     values, counts = np.unique(error_frames, return_counts=True)
@@ -85,7 +81,7 @@ def entropy_score(error_frames):
 
 def saveEncodedVideo(data1, fileName1, data2, fileName2, data3, fileName3):
     """
-    Save the video properties to a binary file
+        Save the video properties to a binary file
     """
     with open('../auxiliary2023/VideoProperties/' + fileName1, 'wb') as file:
         pickle.dump(data1, file)
@@ -97,7 +93,7 @@ def saveEncodedVideo(data1, fileName1, data2, fileName2, data3, fileName3):
 
 def readVideoInfo(fileName1, fileName2, fileName3):
     """
-    Read the video properties from a binary file
+        Read the video properties from a binary file
     """
     with open('../auxiliary2023/VideoProperties/' + fileName1, 'rb') as file:
         data1 = pickle.load(file)
