@@ -1,19 +1,19 @@
-from source2023.videoFunction import *
-from source2023.imageFunction import *
-from source2023.huffman import *
-import numpy as np
+from huffman import *
+from imageFunction import *
+from videoFunction import *
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
 
 def videoEncoder():
     """
-    Encode the video
+        Encode the video
     """
     # Read the video
     frames, video_properties = openVideo(videoPath)
     print(
-        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of {video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
+        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of'
+        f'{video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
 
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
@@ -26,10 +26,8 @@ def videoEncoder():
     createVideoOutput(frames, width, height, fps, 'thema_1_1_originalGrayScaleVideo.avi')
     print("Original grayscale video exported successfully!")
 
-    originalFrames = []
-
     # Add all the frames to the original frames list
-    originalFrames.append(frames)
+    originalFrames = [frames]
 
     seqErrorImages = calculateSeqErrorImages(frames)
 
@@ -60,7 +58,7 @@ def videoEncoder():
 
 def videoDecoder():
     """
-    Decode the video
+        Decode the video
     """
 
     encodedSeqErrorImages, huffmanTable, videoSpecs = readVideoInfo('thema_1_1_encodedSF.pkl', 'thema_1_1_hT.pkl',
@@ -75,7 +73,8 @@ def videoDecoder():
     frames = decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height)
 
     print(
-        f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of {fps} frames per second.')
+        f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of'
+        f'{fps} frames per second.')
 
     first_frame_flag = True
 
