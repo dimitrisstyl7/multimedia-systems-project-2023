@@ -1,6 +1,6 @@
 from hierarchicalSearch import hierarchicalSearch
 from videoFunction import *
-
+import time
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
 
@@ -12,7 +12,7 @@ def videoEncoder():
     frames, video_properties = openVideo(videoPath)
     print(
         f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of'
-        f'{video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
+        f' {video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
 
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
@@ -21,7 +21,10 @@ def videoEncoder():
     height = video_properties[2]
     fps = video_properties[3]
 
-    hierarchicalSearch(frames, width, height)
+    start_time = time.time()
+    motion_vectors = hierarchicalSearch(frames, width, height)
+    end_time = time.time()
+    print("Hierarchical search execution time: ", end_time - start_time)
 
     # The grayscale original video
     createVideoOutput(frames, width, height, fps, 'thema_1_2_originalGrayScaleVideo.avi')
