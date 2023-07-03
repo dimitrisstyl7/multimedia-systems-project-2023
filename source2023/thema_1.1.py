@@ -74,7 +74,7 @@ def videoDecoder():
 
     print(
         f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of'
-        f'{fps} frames per second.')
+        f' {fps} frames per second.')
 
     first_frame_flag = True
 
