@@ -87,6 +87,15 @@ def calculateSeqErrorImages(originalFrames, motionCompensatedFrames):
     return np.array(seqErrorImages, dtype='uint8')
 
 
+def addSeqErrorImagesToCompensatedFrames(motionCompensatedFrames, seqErrorImages):
+    """
+        Add the error frames sequence to the motion compensated frames.
+    """
+    for i in range(1, len(motionCompensatedFrames)):
+        motionCompensatedFrames[i] += seqErrorImages[i]
+    return motionCompensatedFrames
+
+
 def entropyScore(errorFrames):
     """
         Calculate the entropy of the error frames sequence
