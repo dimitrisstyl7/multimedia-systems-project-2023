@@ -2,7 +2,7 @@ from huffman import *
 from imageFunction import *
 from videoFunction import *
 
-videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
+videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'
 
 
 def videoEncoder():
@@ -24,45 +24,44 @@ def videoEncoder():
 
     # The grayscale original video
     createVideoOutput(frames, width, height, fps, 'thema_1_1_originalGrayScaleVideo.avi')
-    print("Original grayscale video exported successfully!")
-
-    seqErrorImages = calculateSeqErrorImages(frames)
-
-    videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
+    print('Original grayscale video exported successfully!')
 
     # Add all the frames to the original frames list
     originalFrames = [frames]
-    H = entropy_score(originalFrames)
-    print("Entropy of the original grayscale video is: ", H)
+    H = entropyScore(originalFrames)
+    print('Entropy of the original grayscale video is: ', H)
 
     # Create the video of the error frames sequence
+    seqErrorImages = calculateSeqErrorImages(frames)
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_1_seqErrorFrames.avi')
 
     # Huffman encoding
     # Create the Huffman tree
     huffmanTree = createHuffmanTree(seqErrorImages)
-    print("\tHuffman tree created successfully!")
+    print('\tHuffman tree created successfully!')
+
     # Create the Huffman table
     huffmanTable = createHuffmanTable(huffmanTree)
-    print("\tHuffman table created successfully!")
+    print('\tHuffman table created successfully!')
+
     # Encode the error frames sequence
     encodedSeqErrorImages = encodeHuffman(seqErrorImages, huffmanTable)
+
     # Save the encoded error frames sequence
+    videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
     saveEncodedVideo(encodedSeqErrorImages, 'thema_1_1_encodedSF.pkl', huffmanTable, 'thema_1_1_hT.pkl', videoSpecs,
                      'thema_1_1_vS.pkl')
-    print("\tEncoded video properties exported successfully!")
-
-    return H
+    print('\tEncoded video properties exported successfully!')
+    return H  # Return the entropy of the original grayscale video
 
 
 def videoDecoder():
     """
         Decode the video
     """
-
     encodedSeqErrorImages, huffmanTable, videoSpecs = readVideoInfo('thema_1_1_encodedSF.pkl', 'thema_1_1_hT.pkl',
                                                                     'thema_1_1_vS.pkl')
-    print("\tEncoded video properties imported successfully!")
+    print('\tEncoded video properties imported successfully!')
     width = int(videoSpecs[1])
     height = int(videoSpecs[2])
     fps = float(videoSpecs[3])
@@ -100,11 +99,10 @@ def videoDecoder():
 
     # Create the video of the decoded frames
     createVideoOutput(decodedFrames, width, height, fps, 'thema_1_1_decodedVideo.avi')
-    print("Decoded grayscale video exported successfully!")
+    print('Decoded grayscale video exported successfully!')
 
-    H = entropy_score(decodedFrames)
-    print("Entropy of the decoded grayscale video is: ", H)
-
+    H = entropyScore(decodedFrames)
+    print('Entropy of the decoded grayscale video is: ', H)
     return H
 
 
@@ -112,6 +110,6 @@ if __name__ == '__main__':
     entropy1 = videoEncoder()
     entropy2 = videoDecoder()
     if entropy1 == entropy2:
-        print("The decoded video is the same as the original video!")
+        print('The decoded video is the same as the original video!')
     else:
-        print("The decoded video is not the same as the original video! Something went wrong!")
+        print('The decoded video is not the same as the original video! Something went wrong!')
