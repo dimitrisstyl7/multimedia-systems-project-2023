@@ -10,17 +10,17 @@ def videoEncoder():
         Encode the video
     """
     # Read the video
-    frames, video_properties = openVideo(videoPath)
+    frames, videoProperties = openVideo(videoPath)
     print(
-        f'The video has {len(frames)} frames, a height of {video_properties[2]} pixels, a width of'
-        f' {video_properties[1]} pixels and a framerate of {video_properties[3]} frames per second.')
+        f'The video has {len(frames)} frames, a height of {videoProperties[2]} pixels, a width of'
+        f' {videoProperties[1]} pixels and a framerate of {videoProperties[3]} frames per second.')
 
     # Convert the video to grayscale
     frames = createGrayscaleVideo(frames)
 
-    width = video_properties[1]
-    height = video_properties[2]
-    fps = video_properties[3]
+    width = videoProperties[1]
+    height = videoProperties[2]
+    fps = videoProperties[3]
 
     # The grayscale original video
     createVideoOutput(frames, width, height, fps, 'thema_1_1_originalGrayScaleVideo.avi')
@@ -74,24 +74,24 @@ def videoDecoder():
         f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of'
         f' {fps} frames per second.')
 
-    first_frame_flag = True
+    firstFrameFlag = True
 
     decodedFrames = []
 
     # Recreate the frames of the original video
-    prev_frame = None
+    prevFrame = None
     i = 0
     for frame in frames:
-        if first_frame_flag:
+        if firstFrameFlag:
             decodedFrames.append(frame)
             saveImage(frame, str(i) + '.jpg')
-            prev_frame = frame
-            first_frame_flag = False
+            prevFrame = frame
+            firstFrameFlag = False
         else:
-            decodedFrame = prev_frame + frame  # Add frame to prev_frame
+            decodedFrame = prevFrame + frame  # Add frame to prevFrame
             saveImage(decodedFrame, str(i) + '.jpg')
             decodedFrames.append(decodedFrame)
-            prev_frame = decodedFrame
+            prevFrame = decodedFrame
         i += 1
 
     # Convert the list to a numpy array
