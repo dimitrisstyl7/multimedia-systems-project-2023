@@ -26,7 +26,8 @@ def hierarchicalSearch(frames, width, height):
             temp_width, temp_height = getWidthAndHeight(level, temp_width, temp_height)
             MV_n_SAD = executeLevel(MV_n_SAD, curr_frame_levels[level], prev_frame_levels[level], macroblock_size,
                                     temp_width, temp_height)
-        motion_vectors.append([(x, y) for (x, y), SAD in MV_n_SAD])
+        motion_vectors.append([(x * 4, y * 4) for (x, y), SAD in MV_n_SAD])  # multiply by 4 because we subsampled the
+        # frames in 3 levels
     return motion_vectors
 
 
