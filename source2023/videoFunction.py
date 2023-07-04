@@ -55,7 +55,6 @@ def calculateSeqErrorImages(frames):
     """
         Calculate the error frames sequence
     """
-
     # Add the first frame to the error frames list (I frame)
     seqErrorImages = [frames[0]]
 
