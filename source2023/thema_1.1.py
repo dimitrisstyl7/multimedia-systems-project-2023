@@ -26,13 +26,12 @@ def videoEncoder():
     createVideoOutput(frames, width, height, fps, 'thema_1_1_originalGrayScaleVideo.avi')
     print("Original grayscale video exported successfully!")
 
-    # Add all the frames to the original frames list
-    originalFrames = [frames]
-
     seqErrorImages = calculateSeqErrorImages(frames)
 
     videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
 
+    # Add all the frames to the original frames list
+    originalFrames = [frames]
     H = entropy_score(originalFrames)
     print("Entropy of the original grayscale video is: ", H)
 
