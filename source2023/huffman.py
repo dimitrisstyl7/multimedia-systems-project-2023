@@ -58,8 +58,8 @@ def encodeHuffman(seqErrorImages, huffmanTable):
         for pixel in errorImage.flatten():
             encodedSeqErrorImage += huffmanTable[pixel]
         encodedSeqErrorImages.append(encodedSeqErrorImage)
-        progressBar(i + 1, len(seqErrorImages), 'Encoding the error frames sequence:', 'Encoded the error frames '
-                                                                                       'sequence!')
+        progressBar(i + 1, len(seqErrorImages), 'Encoding the error frames sequence:',
+                    'Encoded the error frames sequence!')
     return encodedSeqErrorImages
 
 
