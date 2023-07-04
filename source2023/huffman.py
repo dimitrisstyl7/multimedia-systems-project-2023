@@ -6,7 +6,6 @@ import numpy as np
 from progressBar import progressBar
 
 
-# Create the huffman tree for the error frames sequence
 def createHuffmanTree(seqErrorImages):
     """
         Create the Huffman tree
@@ -34,7 +33,6 @@ def createHuffmanTree(seqErrorImages):
     return sorted(heappop(heap)[1:], key=lambda p: (len(p[-1]), p))  # Return the root node
 
 
-# Create the Huffman table
 def createHuffmanTable(huffmanTree):
     """
         Create the Huffman table
@@ -46,7 +44,6 @@ def createHuffmanTable(huffmanTree):
     return huffmanTable
 
 
-# Encode the error frames sequence
 def encodeHuffman(seqErrorImages, huffmanTable):
     """
         Encode the error frames sequence
@@ -63,7 +60,6 @@ def encodeHuffman(seqErrorImages, huffmanTable):
     return encodedSeqErrorImages
 
 
-# Decode the error frames sequence with the Huffman table
 def decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height):
     """
         Decode the error frames sequence with the Huffman table
