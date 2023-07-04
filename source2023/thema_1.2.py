@@ -94,14 +94,33 @@ def videoDecoder():
     height = int(videoSpecs[2])
     fps = float(videoSpecs[3])
 
+    # Decode the motion vectors
     decodedMotionVectors = decodeHuffmanVector(encodedMotionVectors, huffmanTableVectors, motionVectorsSpecs[1],
                                                motionVectorsSpecs[0])
+    decodedMotionVectors = [
+        [tuple(decodedMotionVectorsTuple.tolist()) for decodedMotionVectorsTuple in decodedMotionVectorsSubList] for
+        decodedMotionVectorsSubList in decodedMotionVectors]
 
-    decodedMotionError = decodeHuffman(encodedMotionError, huffmanTableError, width, height)
+    # Decode the sequence of error frames
+    decodedSeqErrorImages = decodeHuffman(encodedMotionError, huffmanTableError, width, height)
 
-    i_frame = decodedMotionError[0]
-    motion_compensated_frames = motionCompensationForDecoding(i_frame, decodedMotionVectors)
-    return 1
+    # Calculate the motion compensated frames
+    i_frame = decodedSeqErrorImages[0]
+    motionCompensatedFrames = motionCompensationForDecoding(i_frame, decodedMotionVectors)
+
+    # Add error sequence to the motion compensated frames
+    decodedFrames = addSeqErrorImagesToCompensatedFrames(motionCompensatedFrames, decodedSeqErrorImages)
+
+    # Convert the list to a numpy array
+    decodedFrames = np.array(decodedFrames, dtype='uint8')
+
+    # Create the video of the decoded frames
+    createVideoOutput(decodedFrames, width, height, fps, 'thema_1_2_decodedVideo.avi')
+    print('Decoded grayscale video exported successfully!')
+
+    H = entropyScore(decodedFrames)
+    print('Entropy of the decoded grayscale video is: ', H)
+    return H
 
 
 if __name__ == '__main__':
