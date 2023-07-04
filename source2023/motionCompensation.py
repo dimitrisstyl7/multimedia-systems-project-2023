@@ -12,88 +12,88 @@ def motionCompensationForEncoding(frames, motionVectors):
         startingPixel = (i // macroblockSize, i % macroblockSize)  # (x, y)
 
         # Get the motion vector of the current macroblock, (x, y)
-        motion_vector = motion_vectors[starting_pixel[0]][starting_pixel[1]]
+        motionVector = motionVectors[startingPixel[0]][startingPixel[1]]
 
-        if motion_vector[0] < 0:  # x < 0
-            if motion_vector[1] < 0:  # y < 0
+        if motionVector[0] < 0:  # x < 0
+            if motionVector[1] < 0:  # y < 0
                 # Move right and down
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                starting_pixel[0]:starting_pixel[0] + macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                    starting_pixel[0]:starting_pixel[0] + macroblock_size
+                prevFrame[
+                startingPixel[1]:startingPixel[1] + macroblockSize,
+                startingPixel[0]:startingPixel[0] + macroblockSize
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] + macroblockSize,
+                    startingPixel[0]:startingPixel[0] + macroblockSize
                     ]
-            if motion_vector[1] > 0:  # y > 0
+            if motionVector[1] > 0:  # y > 0
                 # Move right and up
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                starting_pixel[0]:starting_pixel[0] + macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                    starting_pixel[0]:starting_pixel[0] + macroblock_size
+                prevFrame[
+                startingPixel[1]:startingPixel[1] - macroblockSize,
+                startingPixel[0]:startingPixel[0] + macroblockSize
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] - macroblockSize,
+                    startingPixel[0]:startingPixel[0] + macroblockSize
                     ]
             else:  # y == 0
                 # Move right
-                prev_frame[
-                starting_pixel[1],
-                starting_pixel[0]:starting_pixel[0] + macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1],
-                    starting_pixel[0]:starting_pixel[0] + macroblock_size
+                prevFrame[
+                startingPixel[1],
+                startingPixel[0]:startingPixel[0] + macroblockSize
+                ] = currFrame[
+                    startingPixel[1],
+                    startingPixel[0]:startingPixel[0] + macroblockSize
                     ]
-        elif motion_vector[0] > 0:  # x > 0
-            if motion_vector[1] < 0:
+        elif motionVector[0] > 0:  # x > 0
+            if motionVector[1] < 0:
                 # Move left and down
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                starting_pixel[0]:starting_pixel[0] - macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                    starting_pixel[0]:starting_pixel[0] - macroblock_size
+                prevFrame[
+                startingPixel[1]:startingPixel[1] + macroblockSize,
+                startingPixel[0]:startingPixel[0] - macroblockSize
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] + macroblockSize,
+                    startingPixel[0]:startingPixel[0] - macroblockSize
                     ]
-            if motion_vector[1] > 0:
+            if motionVector[1] > 0:
                 # Move left and up
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                starting_pixel[0]:starting_pixel[0] - macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                    starting_pixel[0]:starting_pixel[0] - macroblock_size
+                prevFrame[
+                startingPixel[1]:startingPixel[1] - macroblockSize,
+                startingPixel[0]:startingPixel[0] - macroblockSize
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] - macroblockSize,
+                    startingPixel[0]:startingPixel[0] - macroblockSize
                     ]
             else:  # y == 0
                 # Move left
-                prev_frame[
-                starting_pixel[1],
-                starting_pixel[0]:starting_pixel[0] - macroblock_size
-                ] = curr_frame[
-                    starting_pixel[1],
-                    starting_pixel[0]:starting_pixel[0] - macroblock_size
+                prevFrame[
+                startingPixel[1],
+                startingPixel[0]:startingPixel[0] - macroblockSize
+                ] = currFrame[
+                    startingPixel[1],
+                    startingPixel[0]:startingPixel[0] - macroblockSize
                     ]
         else:  # x == 0
-            if motion_vector[1] < 0:
+            if motionVector[1] < 0:
                 # Move down
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                starting_pixel[0]
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] + macroblock_size,
-                    starting_pixel[0]
+                prevFrame[
+                startingPixel[1]:startingPixel[1] + macroblockSize,
+                startingPixel[0]
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] + macroblockSize,
+                    startingPixel[0]
                     ]
-            if motion_vector[1] > 0:
+            if motionVector[1] > 0:
                 # Move up
-                prev_frame[
-                starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                starting_pixel[0]
-                ] = curr_frame[
-                    starting_pixel[1]:starting_pixel[1] - macroblock_size,
-                    starting_pixel[0]
+                prevFrame[
+                startingPixel[1]:startingPixel[1] - macroblockSize,
+                startingPixel[0]
+                ] = currFrame[
+                    startingPixel[1]:startingPixel[1] - macroblockSize,
+                    startingPixel[0]
                     ]
             else:  # y == 0
                 # No movement
-                prev_frame = curr_frame
-        motion_compensated_frames.append(prev_frame)
-    return motion_compensated_frames
+                prevFrame = currFrame
+        motionCompensatedFrames.append(prevFrame)
+    return motionCompensatedFrames
 
 
 def motionCompensationForDecoding(iFrame, motionVectors):
