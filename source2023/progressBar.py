@@ -6,12 +6,12 @@ def progressBar(progress, total, message='Progress:', endMessage='Completed', co
         Print a progress bar
     """
     percent = 100 * (progress / total)
-    bar_length = 50
-    filled_length = int(bar_length * percent / 100)
-    bar = '*' * filled_length + '-' * (bar_length - filled_length)
-    message_text = f'{message} ' if message else ''
-    print(color + f'\t {message_text}|{bar}| {percent:.2f}%', end='\r')
+    barLength = 50
+    filledLength = int(barLength * percent / 100)
+    bar = '*' * filledLength + '-' * (barLength - filledLength)
+    messageText = f'{message} ' if message else ''
+    print(color + f'\t {messageText}|{bar}| {percent:.2f}%', end='\r')
     if progress == total:
-        message_text_2 = f'{endMessage} ' if endMessage else ''
-        print(colorama.Fore.GREEN + f'\t {message_text_2}', end='\r')
+        messageText2 = f'{endMessage} ' if endMessage else ''
+        print(colorama.Fore.GREEN + f'\t {messageText2}', end='\r')
         print(colorama.Fore.RESET)
