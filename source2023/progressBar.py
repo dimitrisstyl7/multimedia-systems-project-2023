@@ -1,5 +1,5 @@
 import colorama
-colorama.init()
+
 
 def progressBar(progress, total, message='Progress:', endMessage='Completed', color=colorama.Fore.LIGHTYELLOW_EX):
     """
