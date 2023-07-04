@@ -1,6 +1,6 @@
 from hierarchicalSearch import hierarchicalSearch
 from videoFunction import *
-import time
+
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
 
 
@@ -21,42 +21,21 @@ def videoEncoder():
     height = video_properties[2]
     fps = video_properties[3]
 
-    start_time = time.time()
-    motion_vectors = hierarchicalSearch(frames, width, height)
-    end_time = time.time()
-    print("Hierarchical search execution time: ", end_time - start_time)
-
     # The grayscale original video
     createVideoOutput(frames, width, height, fps, 'thema_1_2_originalGrayScaleVideo.avi')
+    print("Original grayscale video exported successfully!")
 
-    originalFrames = []
-    seqErrorImages = []
+    # Calculate the motion vectors using the hierarchical search algorithm
+    motion_vectors = hierarchicalSearch(frames, width, height)
 
-    # Add all the frames to the original frames list
-    originalFrames.append(frames)
-
-    # Add the first frame to the error frames list (I frame)
-    seqErrorImages.append(frames[0])
-
-    # Create the Encoding Differential Pulse Code Modulation - DPCM
-    for P in range(1, len(frames)):
-        # Calculate the error image of the current frame
-        errorImage = calculateErrorImage(frames[P], frames[P - 1])
-
-        # Add the error image to the error frames list
-        seqErrorImages.append(errorImage)
-
-    seqErrorImages = np.array(seqErrorImages, dtype='uint8')
-
-    print(seqErrorImages)
+    seqErrorImages = calculateSeqErrorImages(frames)
 
     videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
 
-    print("Entropy of the original grayscale video is: ", entropy_score(originalFrames))
-
-    # Calculate the entropy of the error frames sequence
-    H = entropy_score(seqErrorImages)
-    print("Entropy of the seqErrorFrames (grayscale) video is: ", H)
+    # Add all the frames to the original frames list
+    originalFrames = [frames]
+    H = entropy_score(originalFrames)
+    print("Entropy of the original grayscale video is: ", H)
 
     # Create the video of the error frames sequence
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorFrames.avi')
