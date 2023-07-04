@@ -12,11 +12,11 @@ def openVideo(file):
         Open the video and return the frames and the video properties
     """
     video = cv2.VideoCapture(file)
-    frames_num = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    video_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-    video_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    framesNum = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    videoWidth = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    videoHeight = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = video.get(cv2.CAP_PROP_FPS)
-    video_properties = [frames_num, video_width, video_height, fps]
+    video_properties = [framesNum, videoWidth, videoHeight, fps]
     frames = []
     while True:
         ret, frame = video.read()
@@ -32,11 +32,11 @@ def createVideoOutput(frames, width, height, fps, name):
         Create the video output
     """
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    video_writer = cv2.VideoWriter("../auxiliary2023/OutputVideos/" + name, fourcc, fps, (width, height))
+    videoWriter = cv2.VideoWriter("../auxiliary2023/OutputVideos/" + name, fourcc, fps, (width, height))
     for frame in frames:
         gray_color_frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
-        video_writer.write(gray_color_frame)
-    video_writer.release()
+        videoWriter.write(gray_color_frame)
+    videoWriter.release()
 
 
 # Create video to grayscale
@@ -46,8 +46,8 @@ def createGrayscaleVideo(frames):
     """
     grayscaleFrames = []
     for frame in frames:
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        grayscaleFrames.append(gray_frame)
+        grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        grayscaleFrames.append(grayFrame)
     return np.array(grayscaleFrames)
 
 
@@ -92,7 +92,7 @@ def entropyScore(errorFrames):
         Calculate the entropy of the error frames sequence
     """
     # values: unique values of error_frames, counts: how many times each value appears
-    values, counts = np.unique(error_frames, return_counts=True)
+    values, counts = np.unique(errorFrames, return_counts=True)
     return entropy(counts)
 
 
