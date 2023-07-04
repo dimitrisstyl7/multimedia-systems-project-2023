@@ -1,4 +1,5 @@
 from hierarchicalSearch import hierarchicalSearch
+from motionCompensation import motionCompensation
 from videoFunction import *
 
 videoPath = "../auxiliary2023/OriginalVideos/thema_1.avi"
@@ -27,6 +28,9 @@ def videoEncoder():
 
     # Calculate the motion vectors using the hierarchical search algorithm
     motion_vectors = hierarchicalSearch(frames, width, height)
+
+    # Calculate the motion compensated frames
+    motion_compensated_frames = motionCompensation(frames, motion_vectors)
 
     seqErrorImages = calculateSeqErrorImages(frames)
 
