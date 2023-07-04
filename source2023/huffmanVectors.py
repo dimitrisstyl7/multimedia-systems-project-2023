@@ -80,29 +80,3 @@ def decodeHuffmanVector(encodedSeqErrorImages, huffmanTable, width, height):
         decodedErrorImage = np.array(decodedErrorImage, dtype='int').reshape((height, width))
         decodedSeqErrorImages.append(decodedErrorImage)
     return decodedSeqErrorImages
-
-#
-# # Test the methods with the provided input
-# seqErrorImages = [[(1, -3), (2, 1), (0, 0)], [(1, -3), (2, 1), (2, 0)]]
-#
-# # Convert the tuples to NumPy array
-# seqErrorImages_np = np.array(seqErrorImages)
-#
-# # Create Huffman tree
-# huffmanTree = createHuffmanTree(seqErrorImages_np)
-#
-# # Create Huffman table
-# huffmanTable = createHuffmanTable(huffmanTree)
-#
-# # Encode the error frames sequence
-# encodedSeqErrorImages = encodeHuffman(seqErrorImages_np, huffmanTable)
-# print("Encoded sequence:", encodedSeqErrorImages)
-#
-# # Decode the error frames sequence
-# decodedSeqErrorImages = decodeHuffman(encodedSeqErrorImages, huffmanTable, width=3, height=2)
-#
-# # Convert the decoded sequence to the desired format
-# decodedSeqErrorImages = [[tuple(pixel) for pixel in frame] for frame in decodedSeqErrorImages]
-# print("Decoded sequence:")
-# for errorImage in decodedSeqErrorImages:
-#     print(errorImage)
