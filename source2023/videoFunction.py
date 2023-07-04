@@ -69,7 +69,25 @@ def calculateSeqErrorImages(frames):
     return np.array(seqErrorImages, dtype='uint8')
 
 
-def entropy_score(error_frames):
+def calculateSeqErrorImages(originalFrames, motionCompensatedFrames):
+    """
+        Calculate the error frames sequence
+    """
+    # Add the first frame to the error frames list (I frame)
+    seqErrorImages = [originalFrames[0]]
+
+    # Create the Encoding Differential Pulse Code Modulation - DPCM
+    for P in range(1, len(originalFrames)):
+        # Calculate the error image of the current frame
+        errorImage = calculateErrorImage(originalFrames[P], motionCompensatedFrames[P])
+
+        # Add the error image to the error frames list
+        seqErrorImages.append(errorImage)
+
+    return np.array(seqErrorImages, dtype='uint8')
+
+
+def entropyScore(errorFrames):
     """
         Calculate the entropy of the error frames sequence
     """
