@@ -9,6 +9,7 @@ def videoEncoder():
     """
         Encode the video
     """
+    # ------------------------------- Load Video Properties -------------------------------- #
     # Read the video
     frames, videoProperties = openVideo(videoPath)
     print(
@@ -49,18 +50,25 @@ def videoEncoder():
 
     # Save the encoded error frames sequence
     videoSpecs = np.array([len(frames), width, height, fps], dtype='float64')
-    saveEncodedVideo(encodedSeqErrorImages, 'thema_1_1_encodedSF.pkl', huffmanTable, 'thema_1_1_hT.pkl', videoSpecs,
-                     'thema_1_1_vS.pkl')
+
+    saveEncodedData(encodedSeqErrorImages, 'thema_1_1_encodedSF.pkl')
+    saveEncodedData(huffmanTable, 'thema_1_1_hT.pkl')
+    saveEncodedData(videoSpecs, 'thema_1_1_vS.pkl')
+
     print('\tEncoded video properties exported successfully!')
-    return H  # Return the entropy of the original grayscale video
+
+    # Return the entropy of the original grayscale video
+    return H
 
 
 def videoDecoder():
     """
         Decode the video
     """
-    encodedSeqErrorImages, huffmanTable, videoSpecs = readVideoInfo('thema_1_1_encodedSF.pkl', 'thema_1_1_hT.pkl',
-                                                                    'thema_1_1_vS.pkl')
+    encodedSeqErrorImages = readEncodedData('thema_1_1_encodedSF.pkl')
+    huffmanTable = readEncodedData('thema_1_1_hT.pkl')
+    videoSpecs = readEncodedData('thema_1_1_vS.pkl')
+
     print('\tEncoded video properties imported successfully!')
     width = int(videoSpecs[1])
     height = int(videoSpecs[2])
@@ -103,6 +111,8 @@ def videoDecoder():
 
     H = entropyScore(decodedFrames)
     print('Entropy of the decoded grayscale video is: ', H)
+
+    # Return the entropy of the original grayscale video
     return H
 
 
