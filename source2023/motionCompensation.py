@@ -1,3 +1,5 @@
+import numpy as np
+
 macroblockSize = 64
 
 
@@ -8,14 +10,17 @@ def motionCompensationForEncoding(frames, motionVectors):
     motionCompensatedFrames = [frames[0]]
     for i in range(1, len(frames)):
         # Get the previous and current frame
-        currFrame = frames[i]
-        prevFrame = frames[i - 1]
+        # targetFrame = frames[i]
+        refFrame = frames[i - 1]
+        targetFrame = np.zeros_like(refFrame)
         startingPixel = (i // macroblockSize, i % macroblockSize)  # (x, y)
 
         # Get the motion vector of the current macroblock, (x, y)
         motionVector = motionVectors[startingPixel[0]][startingPixel[1]]
+        # motionCompensatedFrames.append(
+        #     motionCompensationForSpecificFrame(motionVector, refFrame, targetFrame, startingPixel))
         motionCompensatedFrames.append(
-            motionCompensationForSpecificFrame(motionVector, prevFrame, currFrame, startingPixel))
+            motionCompensationForSpecificFrame(motionVector, targetFrame, refFrame, startingPixel))
     return motionCompensatedFrames
 
 
@@ -68,7 +73,7 @@ def motionCompensationForSpecificFrame(motionVector, frame1, frame2, startingPix
                 startingPixel[0]:startingPixel[0] + macroblockSize
                 ]
     elif motionVector[0] > 0:  # x > 0
-        if motionVector[1] < 0:
+        if motionVector[1] < 0:  # y < 0
             # Move left and down
             frame1[
             startingPixel[1]:startingPixel[1] + macroblockSize,
@@ -77,7 +82,7 @@ def motionCompensationForSpecificFrame(motionVector, frame1, frame2, startingPix
                 startingPixel[1]:startingPixel[1] + macroblockSize,
                 startingPixel[0]:startingPixel[0] - macroblockSize
                 ]
-        if motionVector[1] > 0:
+        if motionVector[1] > 0:  # y > 0
             # Move left and up
             frame1[
             startingPixel[1]:startingPixel[1] - macroblockSize,
@@ -96,7 +101,7 @@ def motionCompensationForSpecificFrame(motionVector, frame1, frame2, startingPix
                 startingPixel[0]:startingPixel[0] - macroblockSize
                 ]
     else:  # x == 0
-        if motionVector[1] < 0:
+        if motionVector[1] < 0:  # y < 0
             # Move down
             frame1[
             startingPixel[1]:startingPixel[1] + macroblockSize,
@@ -105,7 +110,7 @@ def motionCompensationForSpecificFrame(motionVector, frame1, frame2, startingPix
                 startingPixel[1]:startingPixel[1] + macroblockSize,
                 startingPixel[0]
                 ]
-        if motionVector[1] > 0:
+        if motionVector[1] > 0:  # y > 0
             # Move up
             frame1[
             startingPixel[1]:startingPixel[1] - macroblockSize,
