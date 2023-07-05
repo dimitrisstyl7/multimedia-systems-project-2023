@@ -273,10 +273,10 @@ def calculateMotionVectors(matchedMacroblocks, macroblockSize, noOfCols):
         # Find the real pixel coordinates of the previous macroblock (top-left corner), form: (x, y)
         prevPixel = (prevMacroblockCol * macroblockSize, prevMacroblockRow * macroblockSize)
 
-        # Calculate the motion vector, form: (dx, dy)
-        motionVector = (currPixel[0] - prevPixel[0], currPixel[1] - prevPixel[1])
-        SAD_value = matchedMacroblocks[i][1]  # SAD value of the matched macroblock
-        MVnSAD.append([motionVector, SAD_value])  # Append the motion vector and the SAD value to the list
+        # Calculate the motion vector, motionVector form: (dx, dy)
+        motionVector = (targetPixel[0] - refPixel[0], targetPixel[1] - refPixel[1])
+        SAD_value = matchedMacroblocks[i][1]  # SAD value of the matched macroblocks
+        MVnSAD.append([motionVector, SAD_value])  # Append the motion vector and the SAD value in MVnSAD list
     return MVnSAD
 
 
