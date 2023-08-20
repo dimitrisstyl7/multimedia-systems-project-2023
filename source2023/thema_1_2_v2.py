@@ -37,9 +37,12 @@ def videoEncoder():
     # Calculate the motion vectors using the hierarchical search algorithm
     motionVectors = []
     for i in range(1, len(frames)):
+        print(f'Frame {i} of {len(frames)}')
         referenceFrame = frames[i - 1]
         targetFrame = frames[i]
         motionVectors.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+
+    saveEncodedData(motionVectors, 'tempFile.pkl')
 
     # Calculate the motion compensated frames
     motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors)
