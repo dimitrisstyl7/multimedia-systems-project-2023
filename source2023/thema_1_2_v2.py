@@ -1,7 +1,7 @@
+from hierarchicalSearch import hierarchicalSearch
 from huffman import *
 from huffmanVectors import *
 from motionCompensation import *
-from hierarchicalSearch import hierarchicalSearch
 from videoFunction import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'
@@ -36,17 +36,20 @@ def videoEncoder():
 
     # Calculate the motion vectors using the hierarchical search algorithm
     MVnSAD = []
-    for i in range(1, len(frames)):
-        print(f'Frame {i} of {len(frames)}')
-        referenceFrame = frames[i - 1]
-        targetFrame = frames[i]
-        MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+    # for i in range(1, len(frames)):
+    #     print(f'Frame {i} of {len(frames)}')
+    #     referenceFrame = frames[i - 1]
+    #     targetFrame = frames[i]
+    #     MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+
+    vectors = readEncodedData('vectors.pkl')
+    # saveEncodedData(vectors, 'vectors.pkl')
+
     motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
 
     ''' Temporary block of code to load the motion vectors from a file '''
-    saveEncodedData(motionVectors, 'tempFile.pkl')
-    # motionVectors = readEncodedData('tempFile.pkl')
-    # motionVectors = [[[mv] for mv, _ in value] for value in motionVectors]
+    # saveEncodedData(motionVectors, 'tempFile.pkl')
+    motionVectors = readEncodedData('tempFile.pkl')
     ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
@@ -97,8 +100,54 @@ def videoEncoder():
     saveEncodedData(videoProperties, 'thema_1_2_vP.pkl')
     print('\tSequence error images saved successfully!')
 
-    return 0
+    return H
+
+
+def videoDecoder():
+    """
+        Decode the video
+    """
+    encodedMotionVectors = readEncodedData('thema_1_2_encodedMV.pkl')
+    huffmanTableVectors = readEncodedData('thema_1_2_hTV.pkl')
+    motionVectorsSpecs = readEncodedData('thema_1_2_mVS.pkl')
+    encodedMotionError = readEncodedData('thema_1_2_encodedME.pkl')
+    huffmanTableError = readEncodedData('thema_1_2_hTE.pkl')
+    videoSpecs = readEncodedData('thema_1_2_vS.pkl')
+
+    print('\tEncoded video properties imported successfully!')
+    width = int(videoSpecs[1])
+    height = int(videoSpecs[2])
+    fps = float(videoSpecs[3])
+
+    # Decode the motion vectors
+    decodedMotionVectors = decodeHuffmanVector(encodedMotionVectors, huffmanTableVectors, motionVectorsSpecs[1],
+                                               motionVectorsSpecs[0])
+    decodedMotionVectors = [
+        [tuple(decodedMotionVectorsTuple.tolist()) for decodedMotionVectorsTuple in decodedMotionVectorsSubList] for
+        decodedMotionVectorsSubList in decodedMotionVectors]
+
+    # Decode the sequence of error frames
+    decodedSeqErrorImages = decodeHuffman(encodedMotionError, huffmanTableError, width, height)
+
+    # Calculate the motion compensated frames
+    i_frame = decodedSeqErrorImages[0]
+    motionCompensatedFrames = motionCompensationForDecoding(i_frame, decodedMotionVectors)
+
+    # Add error sequence to the motion compensated frames
+    decodedFrames = addSeqErrorImagesToCompensatedFrames(motionCompensatedFrames, decodedSeqErrorImages)
+
+    # Convert the list to a numpy array
+    decodedFrames = np.array(decodedFrames, dtype='uint8')
+
+    # Create the video of the decoded frames
+    createVideoOutput(decodedFrames, width, height, fps, 'thema_1_2_decodedVideo.avi')
+    print('Decoded grayscale video exported successfully!')
+
+    H = entropyScore(decodedFrames)
+    print('Entropy of the decoded grayscale video is: ', H)
+    return H
 
 
 if __name__ == '__main__':
     entropy1 = videoEncoder()
+    # entropy2 = videoDecoder()
