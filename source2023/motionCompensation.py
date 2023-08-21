@@ -16,11 +16,10 @@ def motionCompensationForEncoding(frames, motionVectors):
         startingPixel = (i // macroblockSize, i % macroblockSize)  # (x, y)
 
         # Get the motion vector of the current macroblock, (x, y)
-        motionVector = motionVectors[startingPixel[0]][startingPixel[1]]
-        # motionCompensatedFrames.append(
-        #     motionCompensationForSpecificFrame(motionVector, refFrame, targetFrame, startingPixel))
+        motionVector = motionVectors[startingPixel[0]][startingPixel[1]][0]
         motionCompensatedFrames.append(
-            motionCompensationForSpecificFrame(motionVector, targetFrame, refFrame, startingPixel))
+            motionCompensationForSpecificFrame(motionVector, targetFrame, refFrame, startingPixel)
+        )
     return motionCompensatedFrames
 
 

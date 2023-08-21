@@ -35,14 +35,19 @@ def videoEncoder():
     print('Entropy of the original grayscale video is: ', H)
 
     # Calculate the motion vectors using the hierarchical search algorithm
-    motionVectors = []
+    MVnSAD = []
     for i in range(1, len(frames)):
         print(f'Frame {i} of {len(frames)}')
         referenceFrame = frames[i - 1]
         targetFrame = frames[i]
-        motionVectors.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+        MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+    motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
 
+    ''' Temporary block of code to load the motion vectors from a file '''
     saveEncodedData(motionVectors, 'tempFile.pkl')
+    # motionVectors = readEncodedData('tempFile.pkl')
+    # motionVectors = [[[mv] for mv, _ in value] for value in motionVectors]
+    ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
     motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors)
@@ -51,11 +56,10 @@ def videoEncoder():
 
     # Calculate the sequence error images
     seqErrorImages = calculateSeqErrorImages(frames, motionCompensatedFrames)
-    createVideoOutput(seqErrorImages, width, height, fps, 'error.avi')
+    createVideoOutput(seqErrorImages, width, height, fps, 'SeqError.avi')
 
     # ------------------------------------- Huffman encoding -------------------------------------#
     # Create the Huffman tree for the Motion Vectors
-    motionVectors = np.array(motionVectors)
     huffmanTreeVectors = createHuffmanTreeVector(motionVectors)
     print('\tHuffman tree created for the vectors successfully!')
 
