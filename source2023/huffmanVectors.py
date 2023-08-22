@@ -1,21 +1,21 @@
 from collections import Counter
 from heapq import *
+
 import numpy as np
 
 
-# Create the Huffman tree for the error frames sequence
-def createHuffmanTreeVector(seqErrorImages):
+def createHuffmanTreeVector(motionVectors):
     """
-        Create the Huffman tree
+        Create the Huffman tree for the motion vectors
     """
-    # Flatten the error frames sequence
-    seqErrorImagesFlat = [pixel for frame in seqErrorImages for pixel in frame]
+    # Flatten the motion vectors
+    motionVectorsFlat = [value for mv in motionVectors for value in mv]
 
-    # Convert the flattened sequence to tuples
-    seqErrorImagesTuples = [tuple(pixel) for pixel in seqErrorImagesFlat]
+    # Convert the flattened motion vectors to tuples
+    motionVectorsTuples = [tuple(mv) for mv in motionVectorsFlat]
 
     # Create a leaf node for each unique character and build a min heap of all leaf nodes
-    heap = [[wt, [sym, ""]] for sym, wt in Counter(seqErrorImagesTuples).items()]
+    heap = [[wt, [sym, ""]] for sym, wt in Counter(motionVectorsTuples).items()]
     heapify(heap)
 
     while len(heap) > 1:
@@ -36,7 +36,6 @@ def createHuffmanTreeVector(seqErrorImages):
     return sorted(heappop(heap)[1:], key=lambda p: (len(p[-1]), p))
 
 
-# Create the Huffman table
 def createHuffmanTableVector(huffmanTree):
     """
         Create the Huffman table
@@ -48,35 +47,33 @@ def createHuffmanTableVector(huffmanTree):
     return huffmanTable
 
 
-# Encode the error frames sequence
-def encodeHuffmanVector(seqErrorImages, huffmanTable):
+def encodeHuffmanVector(motionVectors, huffmanTable):
     """
-        Encode the error frames sequence
+        Encode the motion vectors
     """
-    encodedSeqErrorImages = []
-    for errorImage in seqErrorImages:
-        encodedSeqErrorImage = ''
-        for pixel in errorImage:
-            encodedSeqErrorImage += huffmanTable[tuple(pixel)]
-        encodedSeqErrorImages.append(encodedSeqErrorImage)
-    return encodedSeqErrorImages
+    encodedMotionVectors = []
+    for motionVector in motionVectors:
+        encodedMotionVector = ''
+        for value in motionVector:
+            encodedMotionVector += huffmanTable[tuple(value)]
+        encodedMotionVectors.append(encodedMotionVector)
+    return encodedMotionVectors
 
 
-# Decode the error frames sequence with the Huffman table
-def decodeHuffmanVector(encodedSeqErrorImages, huffmanTable, width, height):
+def decodeHuffmanVector(encodedMotionVectors, huffmanTable, width, height):
     """
-        Decode the error frames sequence with the Huffman table
+        Decode the motion vectors with the Huffman table
     """
     reverseTable = {code: symbol for symbol, code in huffmanTable.items()}
-    decodedSeqErrorImages = []
-    for encodedErrorImage in encodedSeqErrorImages:
-        decodedErrorImage = []
+    decodedMotionVectors = []
+    for encodedMotionVector in encodedMotionVectors:
+        decodedMotionVector = []
         currentCode = ""
-        for bit in encodedErrorImage:
+        for bit in encodedMotionVector:
             currentCode += bit
             if currentCode in reverseTable:
-                decodedErrorImage.append(reverseTable[currentCode])
+                decodedMotionVector.append(reverseTable[currentCode])
                 currentCode = ""
-        decodedErrorImage = np.array(decodedErrorImage, dtype='int').reshape((height, width))
-        decodedSeqErrorImages.append(decodedErrorImage)
-    return decodedSeqErrorImages
+        decodedMotionVector = np.array(decodedMotionVector, dtype='int').reshape((height, width))
+        decodedMotionVectors.append(decodedMotionVector)
+    return decodedMotionVectors
