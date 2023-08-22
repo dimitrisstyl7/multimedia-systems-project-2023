@@ -42,14 +42,11 @@ def videoEncoder():
     #     targetFrame = frames[i]
     #     MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
 
-    vectors = readEncodedData('vectors.pkl')
-    # saveEncodedData(vectors, 'vectors.pkl')
-
-    motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
+    # motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
 
     ''' Temporary block of code to load the motion vectors from a file '''
-    # saveEncodedData(motionVectors, 'tempFile.pkl')
-    motionVectors = readEncodedData('tempFile.pkl')
+    # saveEncodedData(motionVectors, 'motionVectors.pkl')
+    motionVectors = readEncodedData('motionVectors.pkl')
     ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
@@ -90,6 +87,8 @@ def videoEncoder():
     # Save the motion vectors
     saveEncodedData(encodedMotionVectors, 'thema_1_2_eMV.pkl')
     saveEncodedData(huffmanCodeBookVectors, 'thema_1_2_hCBV.pkl')
+    motionVectorsSpecs = (len(motionVectors[0]), len(motionVectors[0][0][0]))
+    saveEncodedData(motionVectorsSpecs, 'thema_1_2_mVS.pkl')
     print('\tMotion vectors saved successfully!')
 
     # Save the sequence error images
@@ -107,11 +106,12 @@ def videoDecoder():
     """
         Decode the video
     """
-    encodedMotionVectors = readEncodedData('thema_1_2_encodedMV.pkl')
-    huffmanTableVectors = readEncodedData('thema_1_2_hTV.pkl')
+
+    encodedMotionVectors = readEncodedData('thema_1_2_eMV.pkl')
+    huffmanCodebookVectors = readEncodedData('thema_1_2_hCBV.pkl')
     motionVectorsSpecs = readEncodedData('thema_1_2_mVS.pkl')
-    encodedMotionError = readEncodedData('thema_1_2_encodedME.pkl')
-    huffmanTableError = readEncodedData('thema_1_2_hTE.pkl')
+    encodedMotionError = readEncodedData('thema_1_2_eSEI.pkl')
+    huffmanCodeBookError = readEncodedData('thema_1_2_hCBSEI.pkl')
     videoSpecs = readEncodedData('thema_1_2_vS.pkl')
 
     print('\tEncoded video properties imported successfully!')
@@ -120,14 +120,14 @@ def videoDecoder():
     fps = float(videoSpecs[3])
 
     # Decode the motion vectors
-    decodedMotionVectors = decodeHuffmanVector(encodedMotionVectors, huffmanTableVectors, motionVectorsSpecs[1],
+    decodedMotionVectors = decodeHuffmanVector(encodedMotionVectors, huffmanCodebookVectors, motionVectorsSpecs[1],
                                                motionVectorsSpecs[0])
     decodedMotionVectors = [
         [tuple(decodedMotionVectorsTuple.tolist()) for decodedMotionVectorsTuple in decodedMotionVectorsSubList] for
         decodedMotionVectorsSubList in decodedMotionVectors]
 
     # Decode the sequence of error frames
-    decodedSeqErrorImages = decodeHuffman(encodedMotionError, huffmanTableError, width, height)
+    decodedSeqErrorImages = decodeHuffman(encodedMotionError, huffmanCodeBookError, width, height)
 
     # Calculate the motion compensated frames
     i_frame = decodedSeqErrorImages[0]
@@ -149,5 +149,5 @@ def videoDecoder():
 
 
 if __name__ == '__main__':
-    entropy1 = videoEncoder()
-    # entropy2 = videoDecoder()
+    # entropy1 = videoEncoder()
+    entropy2 = videoDecoder()
