@@ -112,7 +112,7 @@ def getMVnSADErrorValuesForHighestLevel(referenceFrame, targetFrameInMacroblocks
             targetPixel = (j * macroblockSize, i * macroblockSize)
 
             # Find the search area on the reference frame that is inside the given radius (k).
-            startingPixel, endingPixel = findSearchArea(targetPixel, macroblockSize, k, referenceFrame.shape[1],
+            startingPixel, endingPixel = findSearchArea(targetPixel, k, referenceFrame.shape[1],
                                                         referenceFrame.shape[0])
             MVnSAD.append(
                 executeFullSearch(referenceFrame, targetMacroblock, targetPixel, macroblockSize, startingPixel,
@@ -121,7 +121,7 @@ def getMVnSADErrorValuesForHighestLevel(referenceFrame, targetFrameInMacroblocks
     return MVnSAD
 
 
-def findSearchArea(targetPixel, macroblockSize, k, width, height):
+def findSearchArea(targetPixel, k, width, height):
     """
         Find the search area on the reference frame that is inside the given radius (k).
     """
