@@ -3,29 +3,36 @@ import numpy as np
 macroblockSize = 64
 
 
-def motionCompensationForEncoding(frames, motionVectors):
+def motionCompensationForEncoding(frames, motionVectors, width):
     """
-        Perform motion compensation on the frames.
+        Motion compensation for encoding.
     """
-    motionCompensatedFrames = [frames[0]]
+    noOfCols = width // macroblockSize
+    motionCompensatedFrames = [frames[0]]  # I frame
+
     for i in range(1, len(frames)):
-        # Get the previous and current frame
-        # targetFrame = frames[i]
+        # Get the reference (previous) and target (current) frame
         refFrame = frames[i - 1]
         targetFrame = np.zeros_like(refFrame)
-        startingPixel = (i // macroblockSize, i % macroblockSize)  # (x, y)
+        idxOfVectorsForCurrFrame = i - 1
+        noOfMacroblocks = len(motionVectors[idxOfVectorsForCurrFrame])
 
-        # Get the motion vector of the current macroblock, (x, y)
-        motionVector = motionVectors[startingPixel[0]][startingPixel[1]][0]
-        motionCompensatedFrames.append(
-            motionCompensationForSpecificFrame(motionVector, targetFrame, refFrame, startingPixel)
-        )
+        for j in range(noOfMacroblocks):
+            # Get the motion vector of the current macroblock
+            motionVector = motionVectors[idxOfVectorsForCurrFrame][j][0]
+
+            # Get the starting pixel of the current macroblock
+            macroblockIdx = (j % noOfCols, j // noOfCols)  # (x, y)
+            startingPixel = (macroblockIdx[0] * macroblockSize, macroblockIdx[1] * macroblockSize)  # (x, y)
+            targetFrame = motionCompensationForSpecificFrame(motionVector, targetFrame, refFrame, startingPixel)
+
+        motionCompensatedFrames.append(targetFrame)
     return motionCompensatedFrames
 
 
 def motionCompensationForDecoding(iFrame, motionVectors):
     """
-        Perform motion compensation on the frames.
+        Motion compensation for decoding.
     """
     motionCompensatedFrames = [iFrame]
     for i in range(len(motionVectors)):  # len(motionVectors) means the number of frames
