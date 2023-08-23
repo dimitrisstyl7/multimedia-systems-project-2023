@@ -36,22 +36,21 @@ def videoEncoder():
 
     # Calculate the motion vectors using the hierarchical search algorithm
     MVnSAD = []
-    # for i in range(1, len(frames)):
-    #     print(f'Frame {i} of {len(frames)}')
-    #     referenceFrame = frames[i - 1]
-    #     targetFrame = frames[i]
-    #     MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
+    for i in range(1, len(frames)):
+        print(f'Frame {i} of {len(frames) - 1}')
+        referenceFrame = frames[i - 1]
+        targetFrame = frames[i]
+        MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
 
-    # motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
+    motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
 
     ''' Temporary block of code to load the motion vectors from a file '''
-    # saveEncodedData(motionVectors, 'motionVectors.pkl')
-    motionVectors = readEncodedData('motionVectors.pkl')
+    saveEncodedData(motionVectors, 'motionVectors.pkl')
+    # motionVectors = readEncodedData('motionVectors.pkl')
     ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
-    motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors)
-
+    motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors, width)
     createVideoOutput(motionCompensatedFrames, width, height, fps, 'motion.avi')
 
     # Calculate the sequence error images
@@ -149,5 +148,5 @@ def videoDecoder():
 
 
 if __name__ == '__main__':
-    # entropy1 = videoEncoder()
+    entropy1 = videoEncoder()
     entropy2 = videoDecoder()
