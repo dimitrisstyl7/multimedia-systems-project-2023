@@ -155,13 +155,13 @@ def executeFullSearch(referenceFrame, targetMacroblock, targetPixel, macroblockS
         for col in range(startingPixel[0], endingPixel[0] + 1):
             referenceMacroblock = constructTempReferenceMacroblock(referenceFrame, row, col, macroblockSize)
             SAD_values.append(calculateSADValue(referenceMacroblock, targetMacroblock))
-            pixels.append((row, col))
+            pixels.append((col, row))
 
     minSAD = min(SAD_values)  # Minimum SAD value
-    referenceFramePixel = pixels[SAD_values.index(minSAD)]
+    referencePixel = pixels[SAD_values.index(minSAD)]
 
-    # Calculate motion vector
-    motionVector = (targetPixel[0] - referenceFramePixel[0], targetPixel[1] - referenceFramePixel[1])
+    # Calculate motion vector, form: (dx, dy)
+    motionVector = (referencePixel[0] - targetPixel[0], referencePixel[1] - targetPixel[1])
     return [motionVector, minSAD]
 
 
@@ -267,10 +267,10 @@ def calculateMotionVectors(matchedMacroblocks, macroblockSize, noOfCols):
 
         # Find the coordinates of the pixel (top-left corner) on the reference macroblock, which is equivalent of the
         # pixel on reference frame. refPixel form: (x, y)
-        refPixel = (refMacroblockCol * macroblockSize, refMacroblockRow * macroblockSize)
+        referencePixel = (refMacroblockCol * macroblockSize, refMacroblockRow * macroblockSize)
 
         # Calculate the motion vector, motionVector form: (dx, dy)
-        motionVector = (targetPixel[0] - refPixel[0], targetPixel[1] - refPixel[1])
+        motionVector = (referencePixel[0] - targetPixel[0], referencePixel[1] - targetPixel[1])
         SAD_value = matchedMacroblocks[i][1]  # SAD value of the matched macroblocks
         MVnSAD.append([motionVector, SAD_value])  # Append the motion vector and the SAD value in MVnSAD list
     return MVnSAD
