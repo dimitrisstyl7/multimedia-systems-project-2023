@@ -51,7 +51,7 @@ def createGrayscaleVideo(frames):
     return np.array(grayscaleFrames)
 
 
-def calculateSeqErrorImages(frames):
+def calSeqErrorImages(frames):
     """
         Calculate the error frames sequence
     """

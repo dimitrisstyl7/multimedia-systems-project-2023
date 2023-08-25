@@ -33,7 +33,7 @@ def videoEncoder():
     print('Entropy of the original grayscale video is: ', H)
 
     # Create the video of the error frames sequence
-    seqErrorImages = calculateSeqErrorImages(frames)
+    seqErrorImages = calSeqErrorImages(frames)
     createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_1_seqErrorFrames.avi')
 
     # Huffman encoding
