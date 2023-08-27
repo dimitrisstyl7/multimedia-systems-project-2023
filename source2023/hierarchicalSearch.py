@@ -76,7 +76,7 @@ def executeLevel(referenceFrame, targetFrame, width, height, macroblockSize, lev
         return getMVnSADErrorValuesForHighestLevel(referenceFrame, targetFrameInMacroblocks, macroblockSize, noOfRows,
                                                    noOfCols, k)
     else:  # levels 1-2 (executing block-matching algorithm)
-        MVnSAD_old = [[(x * 2, y * 2), SAD] for (x, y), SAD in MVnSAD]
+        MVnSAD_old = [[(y * 2, x * 2), SAD] for (y, x), SAD in MVnSAD]
         matchedMacroblocks = getSADErrorValues(targetFrameInMacroblocks, referenceFrameInMacroblocks, noOfRows,
                                                noOfCols)
         MVnSAD_new = calculateMotionVectors(matchedMacroblocks, macroblockSize, noOfCols)
@@ -108,8 +108,8 @@ def getMVnSADErrorValuesForHighestLevel(referenceFrame, targetFrameInMacroblocks
             targetMacroblock = targetFrameInMacroblocks[i][j]
 
             # Find the coordinates of the pixel (top-left corner) on the target macroblock, which is equivalent of
-            # the pixel on reference frame. targetPixel form: (x, y)
-            targetPixel = (j * macroblockSize, i * macroblockSize)
+            # the pixel on reference frame. targetPixel form: (y, x)
+            targetPixel = (i * macroblockSize, j * macroblockSize)
 
             # Find the search area on the reference frame that is inside the given radius (k).
             startingPixel, endingPixel = findSearchArea(targetPixel, k, referenceFrame.shape[1],
@@ -126,20 +126,20 @@ def findSearchArea(targetPixel, k, width, height):
         Find the search area on the reference frame that is inside the given radius (k).
     """
     startingPixel = (targetPixel[0] - k, targetPixel[1] - k)  # Starting pixel of the search area (top-left corner),
-    # Pixel form: (x, y)
-    if startingPixel[0] < 0:  # If the starting pixel is out of the x-axis, set x = 0
+    # Pixel form: (y, x)
+    if startingPixel[0] < 0:  # If the starting pixel is out of the y-axis, set y = 0
         startingPixel = (0, startingPixel[1])
-    if startingPixel[1] < 0:  # If the starting pixel is out of the y-axis, set y = 0
+    if startingPixel[1] < 0:  # If the starting pixel is out of the x-axis, set x = 0
         startingPixel = (startingPixel[0], 0)
 
     # Ending pixel of the search area (bottom-right),
-    # Pixel form: (x, y)
+    # Pixel form: (y, x)
     endingPixel = (targetPixel[0] + k, targetPixel[1] + k)  # Ending pixel of the search area.
     # == (targetPixel[0] + macroblockSize + k) - macroblockSize, (targetPixel[1] + macroblockSize + k) - macroblockSize
-    if endingPixel[0] > width:  # If the ending pixel is out of the x-axis, set x = width
-        endingPixel = (width, endingPixel[1])
-    if endingPixel[1] > height:  # If the ending pixel is out of the y-axis, set y = height
-        endingPixel = (endingPixel[0], height)
+    if endingPixel[0] > height:  # If the ending pixel is out of the y-axis, set y = height
+        endingPixel = (height, endingPixel[1])
+    if endingPixel[1] > width:  # If the ending pixel is out of the x-axis, set x = width
+        endingPixel = (endingPixel[0], width)
 
     return startingPixel, endingPixel
 
@@ -149,18 +149,18 @@ def executeFullSearch(referenceFrame, targetMacroblock, targetPixel, macroblockS
         Execute full search algorithm for the target macroblock.
     """
     SAD_values = []  # SAD_values list form: [SAD_value_i, SAD_value_i+1, ...]
-    pixels = []  # pixels list form: [(pixel_i_X, pixel_i_Y), (pixel_i+1_X, pixel_i+1_Y), ...]
+    pixels = []  # pixels list form: [(pixel_i_y, pixel_i_x), (pixel_i+1_y, pixel_i+1_x), ...]
 
-    for row in range(startingPixel[1], endingPixel[1] + 1):
-        for col in range(startingPixel[0], endingPixel[0] + 1):
+    for row in range(startingPixel[0], endingPixel[0] + 1):
+        for col in range(startingPixel[1], endingPixel[1] + 1):
             referenceMacroblock = constructTempReferenceMacroblock(referenceFrame, row, col, macroblockSize)
             SAD_values.append(calculateSADValue(referenceMacroblock, targetMacroblock))
-            pixels.append((col, row))
+            pixels.append((row, col))
 
     minSAD = min(SAD_values)  # Minimum SAD value
     referencePixel = pixels[SAD_values.index(minSAD)]
 
-    # Calculate motion vector, form: (dx, dy)
+    # Calculate motion vector, form: (dy, dx)
     motionVector = (referencePixel[0] - targetPixel[0], referencePixel[1] - targetPixel[1])
     return [motionVector, minSAD]
 
@@ -259,17 +259,17 @@ def calculateMotionVectors(matchedMacroblocks, macroblockSize, noOfCols):
         targetMacroblockCol = i % noOfCols
 
         # Find the coordinates of the pixel (top-left corner) on the target macroblock, which is equivalent of the pixel
-        # on reference frame. Pixel form: (x, y)
-        targetPixel = (targetMacroblockCol * macroblockSize, targetMacroblockRow * macroblockSize)
+        # on reference frame. Pixel form: (y, x)
+        targetPixel = (targetMacroblockRow * macroblockSize, targetMacroblockCol * macroblockSize)
 
         # Find the coordinates of the reference macroblock
         refMacroblockRow, refMacroblockCol = matchedMacroblocks[i][0]
 
         # Find the coordinates of the pixel (top-left corner) on the reference macroblock, which is equivalent of the
-        # pixel on reference frame. refPixel form: (x, y)
-        referencePixel = (refMacroblockCol * macroblockSize, refMacroblockRow * macroblockSize)
+        # pixel on reference frame. refPixel form: (y, x)
+        referencePixel = (refMacroblockRow * macroblockSize, refMacroblockCol * macroblockSize)
 
-        # Calculate the motion vector, motionVector form: (dx, dy)
+        # Calculate the motion vector, motionVector form: (dy, dx)
         motionVector = (referencePixel[0] - targetPixel[0], referencePixel[1] - targetPixel[1])
         SAD_value = matchedMacroblocks[i][1]  # SAD value of the matched macroblocks
         MVnSAD.append([motionVector, SAD_value])  # Append the motion vector and the SAD value in MVnSAD list
