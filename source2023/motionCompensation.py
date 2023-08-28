@@ -30,39 +30,53 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
     return motionCompensatedFrames
 
 
-def motionCompensationForDecoding(iFrame, motionVectors):
-    """
-        Motion compensation for decoding.
-    """
-    motionCompensatedFrames = [iFrame]
-    for i in range(len(motionVectors)):  # len(motionVectors) equals to the number of frames
-        referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
-        targetFrame = referenceFrame.copy()
-        for j in range(len(motionVectors[i])):  # len(motionVectors[i]) equals to the number of macroblocks in the frame
-            startingPixel = (j % macroblockSize, j // macroblockSize)  # (y, x)
-            motionVector = motionVectors[i][j]  # Get the motion vector of the current macroblock, (y, x)
-        motionCompensatedFrames.append(
-            motionCompensationForSpecificFrame(motionVector, targetFrame, referenceFrame, startingPixel))
-    return motionCompensatedFrames
-
-
 def motionCompensationForEncodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel, width,
                                                  height):
     """
-        Perform motion compensation on a specific frame.
+        Motion compensation on a specific frame for encoding.
     """
-
     if motionVector[0] == 0 and motionVector[1] == 0:
         # No movement
+        '''       CHECK        '''
         return referenceFrame
     return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
 
-def motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel):
+def motionCompensationForDecoding(iFrame, motionVectors, width, height):
     """
-        Perform motion compensation on a specific frame.
+        Motion compensation for decoding.
     """
-    pass
+    noOfCols = width // macroblockSize
+    motionCompensatedFrames = [iFrame]
+
+    for i in range(1, len(motionVectors)):  # len(motionVectors) equals to the number of frames
+        referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
+        targetFrame = referenceFrame.copy()
+        idxOfVectorsForCurrFrame = i - 1
+        noOfMacroblocks = len(motionVectors[idxOfVectorsForCurrFrame])
+
+        for j in range(noOfMacroblocks):
+            # Get the motion vector of the current macroblock
+            motionVector = motionVectors[i][j]
+
+            # Get the starting pixel of the current macroblock
+            macroblockIdx = (j // noOfCols, j % noOfCols)  # (y, x)
+            startingRefPixel = (macroblockIdx[0] * macroblockSize, macroblockIdx[1] * macroblockSize)  # (y, x)
+            targetFrame = motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame,
+                                                                       startingRefPixel, width, height)
+        motionCompensatedFrames.append(targetFrame)
+    return motionCompensatedFrames
+
+
+def motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel, width,
+                                                 height):
+    """
+        Motion compensation on a specific frame for decoding.
+    """
+    if motionVector[0] == 0 and motionVector[1] == 0:
+        # No movement
+        return targetFrame
+    return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
 
 def performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height):
