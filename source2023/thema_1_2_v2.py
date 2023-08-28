@@ -35,14 +35,7 @@ def videoEncoder():
     print('Entropy of the original grayscale video is: ', H)
 
     # Calculate the motion vectors using the hierarchical search algorithm
-    MVnSAD = []
-    for i in range(1, len(frames)):
-        print(f'Frame {i} of {len(frames) - 1}')
-        referenceFrame = frames[i - 1]
-        targetFrame = frames[i]
-        MVnSAD.append(hierarchicalSearch(referenceFrame, targetFrame, width, height))
-
-    motionVectors = [[[mv] for mv, _ in value] for value in MVnSAD]
+    motionVectors = hierarchicalSearch(frames)
 
     ''' Temporary block of code to load the motion vectors from a file '''
     saveEncodedData(motionVectors, 'motionVectors.pkl')
@@ -50,7 +43,7 @@ def videoEncoder():
     ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
-    motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors, width)
+    motionCompensatedFrames = motionCompensationForEncoding(frames, motionVectors, width, height)
     createVideoOutput(motionCompensatedFrames, width, height, fps, 'motion.avi')
 
     # Calculate the sequence error images
@@ -86,7 +79,7 @@ def videoEncoder():
     # Save the motion vectors
     saveEncodedData(encodedMotionVectors, 'thema_1_2_eMV.pkl')
     saveEncodedData(huffmanCodeBookVectors, 'thema_1_2_hCBV.pkl')
-    motionVectorsSpecs = (len(motionVectors[0]), len(motionVectors[0][0][0]))
+    motionVectorsSpecs = (len(motionVectors[0]), len(motionVectors[0][0]))
     saveEncodedData(motionVectorsSpecs, 'thema_1_2_mVS.pkl')
     print('\tMotion vectors saved successfully!')
 
@@ -149,4 +142,4 @@ def videoDecoder():
 
 if __name__ == '__main__':
     entropy1 = videoEncoder()
-    entropy2 = videoDecoder()
+    # entropy2 = videoDecoder()
