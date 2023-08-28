@@ -35,11 +35,11 @@ def videoEncoder():
     print('Entropy of the original grayscale video is: ', H)
 
     # Calculate the motion vectors using the hierarchical search algorithm
-    motionVectors = hierarchicalSearch(frames)
+    # motionVectors = hierarchicalSearch(frames)
 
     ''' Temporary block of code to load the motion vectors from a file '''
-    saveEncodedData(motionVectors, 'motionVectors.pkl')
-    # motionVectors = readEncodedData('motionVectors.pkl')
+    # saveEncodedData(motionVectors, 'motionVectors.pkl')
+    motionVectors = readEncodedData('motionVectors.pkl')
     ''' TO BE REMOVED '''
 
     # Calculate the motion compensated frames
@@ -98,7 +98,6 @@ def videoDecoder():
     """
         Decode the video
     """
-
     encodedMotionVectors = readEncodedData('thema_1_2_eMV.pkl')
     huffmanCodebookVectors = readEncodedData('thema_1_2_hCBV.pkl')
     motionVectorsSpecs = readEncodedData('thema_1_2_mVS.pkl')
@@ -122,8 +121,11 @@ def videoDecoder():
     decodedSeqErrorImages = decodeHuffman(encodedMotionError, huffmanCodeBookError, width, height)
 
     # Calculate the motion compensated frames
-    i_frame = decodedSeqErrorImages[0]
-    motionCompensatedFrames = motionCompensationForDecoding(i_frame, decodedMotionVectors)
+    iFrame = decodedSeqErrorImages[0]
+    motionCompensatedFrames = motionCompensationForDecoding(iFrame, decodedMotionVectors, width, height)
+
+    createVideoOutput(motionCompensatedFrames, width, height, fps, 'motionCompensatedFrames.avi')
+    createVideoOutput(decodedSeqErrorImages, width, height, fps, 'decodedSeqErrorImages.avi')
 
     # Add error sequence to the motion compensated frames
     decodedFrames = addSeqErrorImagesToCompensatedFrames(motionCompensatedFrames, decodedSeqErrorImages)
@@ -141,5 +143,5 @@ def videoDecoder():
 
 
 if __name__ == '__main__':
-    entropy1 = videoEncoder()
-    # entropy2 = videoDecoder()
+    # entropy1 = videoEncoder()
+    entropy2 = videoDecoder()
