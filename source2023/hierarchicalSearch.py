@@ -6,7 +6,7 @@ radius = 32  # Search radius
 numLevels = 3  # Pyramid Levels
 
 
-def hierarchicalSearch(referenceFrame, targetFrame, width, height):
+def hierarchicalSearch(originalFrames):
     """
             Execute the hierarchical search algorithm.
     """
