@@ -19,7 +19,7 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
 
         for j in range(noOfMacroblocks):
             # Get the motion vector of the current macroblock
-            motionVector = motionVectors[idxOfVectorsForCurrFrame][j][0]
+            motionVector = motionVectors[idxOfVectorsForCurrFrame][j]
 
             # Get the starting pixel of the current macroblock
             macroblockIdx = (j // noOfCols, j % noOfCols)  # (y, x)
@@ -51,44 +51,18 @@ def motionCompensationForEncodingOnSpecificFrame(motionVector, targetFrame, refe
     """
         Perform motion compensation on a specific frame.
     """
-    if motionVector[1] < 0:  # x < 0
-        if motionVector[0] < 0:  # y < 0
-            # Move left and up
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
-        elif motionVector[0] > 0:  # y > 0
-            # Move left and down
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
+    if motionVector[0] == 0 and motionVector[1] == 0:
+        # No movement
+        return referenceFrame
+    return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
-        else:  # y == 0
-            # Move left
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
-    elif motionVector[1] > 0:  # x > 0
-        if motionVector[0] < 0:  # y < 0
-            # Move right and up
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-        elif motionVector[0] > 0:  # y > 0
-            # Move right and down
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-        else:  # y == 0
-            # Move right
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-    else:  # x == 0
-        if motionVector[0] < 0:  # y < 0
-            # Move up
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-        elif motionVector[0] > 0:  # y > 0
-            # Move down
-            return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-        else:  # y == 0
-            # No movement
-            return referenceFrame
+def motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel):
+    """
+        Perform motion compensation on a specific frame.
+    """
+    pass
 
 
 def performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height):
