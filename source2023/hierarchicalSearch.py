@@ -4,7 +4,7 @@ import numpy as np
 
 def hierarchicalSearch(referenceFrame, targetFrame, width, height):
     """
-            Execute the hierarchical search algorithm for the
+            Execute the hierarchical search algorithm.
     """
     # Subsample previous and current frames in 3 levels
     referenceFrameLevels = getFrameLevels(referenceFrame, width, height)  # previous frame
