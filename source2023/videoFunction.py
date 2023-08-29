@@ -91,9 +91,13 @@ def addSeqErrorImagesToCompensatedFrames(motionCompensatedFrames, seqErrorImages
     """
         Add the error frames sequence to the motion compensated frames.
     """
-    for i in range(1, len(motionCompensatedFrames)):
-        motionCompensatedFrames[i] += seqErrorImages[i]
-    return motionCompensatedFrames
+    outputFrames = [seqErrorImages[0]]
+    for i in range(0, len(motionCompensatedFrames)):
+        seqErrorFrame = seqErrorImages[i + 1]
+        motionCompensatedFrame = motionCompensatedFrames[i]
+        outputFrame = motionCompensatedFrame + seqErrorFrame
+        outputFrames.append(outputFrame)
+    return outputFrames
 
 
 def entropyScore(errorFrames):
