@@ -37,8 +37,7 @@ def motionCompensationForEncodingOnSpecificFrame(motionVector, targetFrame, refe
     """
     if motionVector[0] == 0 and motionVector[1] == 0:
         # No movement
-        '''       CHECK        '''
-        return referenceFrame
+        return targetFrame
     return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
 
 
