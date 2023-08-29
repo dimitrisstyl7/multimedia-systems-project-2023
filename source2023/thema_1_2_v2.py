@@ -81,15 +81,15 @@ def videoEncoder():
     saveEncodedData(huffmanCodeBookVectors, 'thema_1_2_hCBV.pkl')
     motionVectorsSpecs = (len(motionVectors[0]), len(motionVectors[0][0]))
     saveEncodedData(motionVectorsSpecs, 'thema_1_2_mVS.pkl')
-    print('\tMotion vectors saved successfully!')
+    print('\tEncoded motion vectors saved successfully!')
 
     # Save the sequence error images
     saveEncodedData(encodedSeqErrorImages, 'thema_1_2_eSEI.pkl')
     saveEncodedData(huffmanCodeBookSeqErrorImages, 'thema_1_2_hCBSEI.pkl')
+    print('\tEncoded sequence error images saved successfully!')
 
     # Save the video properties
     saveEncodedData(videoProperties, 'thema_1_2_vP.pkl')
-    print('\tSequence error images saved successfully!')
 
     return H
 
@@ -103,12 +103,12 @@ def videoDecoder():
     motionVectorsSpecs = readEncodedData('thema_1_2_mVS.pkl')
     encodedMotionError = readEncodedData('thema_1_2_eSEI.pkl')
     huffmanCodeBookError = readEncodedData('thema_1_2_hCBSEI.pkl')
-    videoSpecs = readEncodedData('thema_1_2_vS.pkl')
+    videoProperties = readEncodedData('thema_1_2_vP.pkl')
 
     print('\tEncoded video properties imported successfully!')
-    width = int(videoSpecs[1])
-    height = int(videoSpecs[2])
-    fps = float(videoSpecs[3])
+    width = videoProperties[1]
+    height = videoProperties[2]
+    fps = videoProperties[3]
 
     # Decode the motion vectors
     decodedMotionVectors = decodeHuffmanVector(encodedMotionVectors, huffmanCodebookVectors, motionVectorsSpecs[1],
