@@ -38,49 +38,13 @@ def motionCompensationForEncodingOnSpecificFrame(motionVector, targetFrame, refe
     if motionVector[0] == 0 and motionVector[1] == 0:
         # No movement
         return targetFrame
-    return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
+    return performMotionCompensationForEncoding(startingRefPixel, motionVector, referenceFrame, targetFrame, width,
+                                                height)
 
 
-def motionCompensationForDecoding(iFrame, motionVectors, width, height):
+def performMotionCompensationForEncoding(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height):
     """
-        Motion compensation for decoding.
-    """
-    noOfCols = width // macroblockSize
-    motionCompensatedFrames = [iFrame]
-
-    for i in range(1, len(motionVectors)):  # len(motionVectors) equals to the number of frames
-        referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
-        targetFrame = referenceFrame.copy()
-        idxOfVectorsForCurrFrame = i - 1
-        noOfMacroblocks = len(motionVectors[idxOfVectorsForCurrFrame])
-
-        for j in range(noOfMacroblocks):
-            # Get the motion vector of the current macroblock
-            motionVector = motionVectors[i][j]
-
-            # Get the starting pixel of the current macroblock
-            macroblockIdx = (j // noOfCols, j % noOfCols)  # (y, x)
-            startingRefPixel = (macroblockIdx[0] * macroblockSize, macroblockIdx[1] * macroblockSize)  # (y, x)
-            targetFrame = motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame,
-                                                                       startingRefPixel, width, height)
-        motionCompensatedFrames.append(targetFrame)
-    return motionCompensatedFrames
-
-
-def motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel, width,
-                                                 height):
-    """
-        Motion compensation on a specific frame for decoding.
-    """
-    if motionVector[0] == 0 and motionVector[1] == 0:
-        # No movement
-        return targetFrame
-    return performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height)
-
-
-def performMotionCompensation(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height):
-    """
-        Perform motion compensation.
+        Perform motion compensation for encoding.
     """
     startingTargetPixel = (startingRefPixel[0] + motionVector[0], startingRefPixel[1] + motionVector[1])
 
@@ -192,4 +156,241 @@ def performMotionCompensation(startingRefPixel, motionVector, referenceFrame, ta
         startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
         startingRefPixel[1]:startingRefPixel[1] + macroblockSize
         ]
+    return targetFrame
+
+
+def motionCompensationForDecoding(iFrame, motionVectors, width, height, decodedSeqErrorImages):
+    """
+        Motion compensation for decoding.
+    """
+    noOfCols = width // macroblockSize
+    motionCompensatedFrames = [iFrame]
+    noOfMacroblocks = len(motionVectors[0])
+
+    for i in range(1, len(motionVectors)):  # len(motionVectors) equals to the number of frames - 1
+        referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
+        targetFrame = np.zeros_like(referenceFrame)
+        seqErrorImage = decodedSeqErrorImages[i]
+
+        for j in range(noOfMacroblocks):
+            # Get the motion vector of the current macroblock
+            motionVector = motionVectors[i][j]
+
+            # Get the starting pixel of the current macroblock
+            macroblockIdx = (j // noOfCols, j % noOfCols)  # (y, x)
+            startingRefPixel = (macroblockIdx[0] * macroblockSize, macroblockIdx[1] * macroblockSize)  # (y, x)
+            targetFrame = motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame,
+                                                                       startingRefPixel, width, height, seqErrorImage)
+        motionCompensatedFrames.append(targetFrame)
+    return motionCompensatedFrames
+
+
+def motionCompensationForDecodingOnSpecificFrame(motionVector, targetFrame, referenceFrame, startingRefPixel, width,
+                                                 height, seqErrorImage):
+    """
+        Motion compensation on a specific frame for decoding.
+    """
+    if motionVector[0] == 0 and motionVector[1] == 0:
+        # No movement
+        return targetFrame
+    return performMotionCompensationForDecoding(startingRefPixel, motionVector, referenceFrame, targetFrame, width,
+                                                height, seqErrorImage)
+
+
+def performMotionCompensationForDecoding(startingRefPixel, motionVector, referenceFrame, targetFrame, width, height,
+                                         seqErrorImage):
+    """
+        Perform motion compensation for decoding.
+    """
+    startingTargetPixel = (startingRefPixel[0] + motionVector[0], startingRefPixel[1] + motionVector[1])
+
+    if startingTargetPixel[0] < 0 and startingTargetPixel[1] < 0:
+        # out of bounds (top left)
+        dy = startingTargetPixel[0] + macroblockSize
+        dx = startingTargetPixel[1] + macroblockSize
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+            startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+             startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+             ]
+        return targetFrame
+
+    if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and \
+            startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
+        # out of bounds (bottom right)
+        dy, dx = height - startingTargetPixel[0], width - startingTargetPixel[1]
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0]:startingRefPixel[0] + dy,
+            startingRefPixel[1]:startingRefPixel[1] + dx
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0]:startingRefPixel[0] + dy,
+             startingRefPixel[1]:startingRefPixel[1] + dx
+             ]
+        return targetFrame
+
+    if startingTargetPixel[0] < 0 and startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
+        # out of bounds (top right)
+        dy = startingTargetPixel[0] + macroblockSize
+        dx = width - startingTargetPixel[1]
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+            startingRefPixel[1]:startingRefPixel[1] + dx
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+             startingRefPixel[1]:startingRefPixel[1] + dx
+             ]
+        return targetFrame
+
+    if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and startingTargetPixel[1] < 0:
+        # out of bounds (bottom left)
+        dy = height - startingTargetPixel[0]
+        dx = startingTargetPixel[1] + macroblockSize
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0]:startingRefPixel[0] + dy,
+            startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0]:startingRefPixel[0] + dy,
+             startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+             ]
+        return targetFrame
+
+    if startingTargetPixel[1] < 0:
+        # out of bounds (left)
+        dx = startingTargetPixel[1] + macroblockSize
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+            startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+             startingRefPixel[1] + macroblockSize - dx:startingRefPixel[1] + macroblockSize
+             ]
+        return targetFrame
+
+    if startingTargetPixel[0] < 0:
+        # out of bounds (top)
+        dy = startingTargetPixel[0] + macroblockSize
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+            startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0] + macroblockSize - dy:startingRefPixel[0] + macroblockSize,
+             startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+             ]
+        return targetFrame
+
+    if startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
+        # out of bounds (right)
+        dx = width - startingTargetPixel[1]
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+            startingRefPixel[1]:startingRefPixel[1] + dx
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+             startingRefPixel[1]:startingRefPixel[1] + dx
+             ]
+        return targetFrame
+
+    if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0]:
+        # out of bounds (bottom)
+        dy = height - startingTargetPixel[0]
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] = referenceFrame[
+            startingRefPixel[0]:startingRefPixel[0] + dy,
+            startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+            ]
+
+        # Add the error image to the target frame
+        targetFrame[
+        startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+        startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+        ] += seqErrorImage[
+             startingRefPixel[0]:startingRefPixel[0] + dy,
+             startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+             ]
+        return targetFrame
+
+    # if no out of bounds
+    targetFrame[
+    startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+    startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+    ] = referenceFrame[
+        startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+        startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+        ]
+
+    # Add the error image to the target frame
+    targetFrame[
+    startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
+    startingTargetPixel[1]:startingTargetPixel[1] + macroblockSize
+    ] += seqErrorImage[
+         startingRefPixel[0]:startingRefPixel[0] + macroblockSize,
+         startingRefPixel[1]:startingRefPixel[1] + macroblockSize
+         ]
     return targetFrame
