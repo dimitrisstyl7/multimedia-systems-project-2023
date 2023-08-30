@@ -159,22 +159,28 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
     return targetFrame
 
 
-def motionCompensationForDecoding(iFrame, motionVectors, width, height, decodedSeqErrorImages):
+def motionCompensationForDecoding(motionVectors, width, height, decodedSeqErrorImages):
     """
         Motion compensation for decoding.
     """
     noOfCols = width // macroblockSize
-    motionCompensatedFrames = [iFrame]
+    motionCompensatedFrames = []
     noOfMacroblocks = len(motionVectors[0])
+    iFrame = decodedSeqErrorImages[0]
 
-    for i in range(1, len(motionVectors)):  # len(motionVectors) equals to the number of frames - 1
-        referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
+    for i in range(1, len(motionVectors) + 1):  # len(motionVectors) equals to the number of frames
+        if i == 1:
+            referenceFrame = iFrame
+        else:
+            referenceFrame = motionCompensatedFrames[-1]  # Reference frame is the last frame in the list
         targetFrame = np.zeros_like(referenceFrame)
-        seqErrorImage = decodedSeqErrorImages[i]
-
+        seqErrorImage = decodedSeqErrorImages[i - 1]
         for j in range(noOfMacroblocks):
             # Get the motion vector of the current macroblock
-            motionVector = motionVectors[i][j]
+            if i == 1:  # I frame
+                motionVector = motionVectors[0][j]
+            else:
+                motionVector = motionVectors[i - 1][j]
 
             # Get the starting pixel of the current macroblock
             macroblockIdx = (j // noOfCols, j % noOfCols)  # (y, x)
