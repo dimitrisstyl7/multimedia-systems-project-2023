@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from progressBar import *
 
 macroblockSize = 64
 radius = 32  # Search radius
@@ -12,8 +13,8 @@ def hierarchicalSearch(originalFrames):
     """
     motionVectors = []
 
+    progressBar(0, len(originalFrames), 'Calculating the motion vectors: ', 'Motion Vectors Calculations Completed!')
     for i in range(1, len(originalFrames)):
-        print(f'Frame {i} of {len(originalFrames) - 1}')
         referenceFrame = originalFrames[i - 1]
         targetFrame = originalFrames[i]
 
@@ -26,6 +27,9 @@ def hierarchicalSearch(originalFrames):
         for level in range(levels - 1, -1, -1):
             MVnSAD = executeLevel(referenceFramePyramid[level], targetFramePyramid[level], level, MVnSAD)
         motionVectors.append([value[0] for value in MVnSAD])
+        progressBar(i + 1, len(originalFrames), 'Calculating the motion vectors: ',
+                    'Motion Vectors Calculations Completed!')
+
     return motionVectors
 
 

@@ -1,4 +1,5 @@
 import numpy as np
+from progressBar import *
 
 macroblockSize = 64
 
@@ -10,6 +11,7 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
     noOfCols = width // macroblockSize
     motionCompensatedFrames = [frames[0]]  # I frame
 
+    progressBar(0, len(frames), 'Creating Motion Compensation Frames: ', 'Motion Compensation Frames Created!')
     for i in range(1, len(frames)):
         # Get the reference (previous) and target (current) frame
         referenceFrame = frames[i - 1]
@@ -27,6 +29,7 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
             targetFrame = motionCompensationForEncodingOnSpecificFrame(motionVector, targetFrame, referenceFrame,
                                                                        startingRefPixel, width, height)
         motionCompensatedFrames.append(targetFrame)
+        progressBar(i + 1, len(frames), 'Creating Motion Compensation Frames: ', 'Motion Compensation Frames Created!')
     return motionCompensatedFrames
 
 

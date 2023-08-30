@@ -5,6 +5,7 @@ import numpy as np
 from scipy.stats import entropy
 
 from imageFunction import calculateErrorImage
+from progressBar import progressBar
 
 
 def openVideo(file):
@@ -77,12 +78,15 @@ def calculateSeqErrorImages(originalFrames, motionCompensatedFrames):
     seqErrorImages = [originalFrames[0]]
 
     # Create the Encoding Differential Pulse Code Modulation - DPCM
+    progressBar(0, len(originalFrames), 'Creating Sequence Error Images: ', 'Sequence Error Images Created!')
+
     for P in range(1, len(originalFrames)):
         # Calculate the error image of the current frame
         errorImage = calculateErrorImage(originalFrames[P], motionCompensatedFrames[P])
 
         # Add the error image to the error frames list
         seqErrorImages.append(errorImage)
+        progressBar(P + 1, len(originalFrames), 'Creating Sequence Error Images: ', 'Sequence Error Images Created!')
 
     return np.array(seqErrorImages, dtype='uint8')
 
