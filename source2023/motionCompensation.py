@@ -1,4 +1,5 @@
 import numpy as np
+
 from progressBar import *
 
 macroblockSize = 64
@@ -10,6 +11,7 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
     """
     noOfCols = width // macroblockSize
     motionCompensatedFrames = [frames[0]]  # I frame
+    noOfMacroblocks = len(motionVectors[0])
 
     progressBar(0, len(frames), 'Creating Motion Compensation Frames: ', 'Motion Compensation Frames Created!')
     for i in range(1, len(frames)):
@@ -17,7 +19,6 @@ def motionCompensationForEncoding(frames, motionVectors, width, height):
         referenceFrame = frames[i - 1]
         targetFrame = np.zeros_like(referenceFrame)
         idxOfVectorsForCurrFrame = i - 1
-        noOfMacroblocks = len(motionVectors[idxOfVectorsForCurrFrame])
 
         for j in range(noOfMacroblocks):
             # Get the motion vector of the current macroblock
@@ -51,8 +52,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
     """
     startingTargetPixel = (startingRefPixel[0] + motionVector[0], startingRefPixel[1] + motionVector[1])
 
+    # out of bounds (top left)
     if startingTargetPixel[0] < 0 and startingTargetPixel[1] < 0:
-        # out of bounds (top left)
         dy = startingTargetPixel[0] + macroblockSize
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
@@ -64,9 +65,9 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (bottom right)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and \
             startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (bottom right)
         dy, dx = height - startingTargetPixel[0], width - startingTargetPixel[1]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -77,8 +78,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (top right)
     if startingTargetPixel[0] < 0 and startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (top right)
         dy = startingTargetPixel[0] + macroblockSize
         dx = width - startingTargetPixel[1]
         targetFrame[
@@ -90,8 +91,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (bottom left)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and startingTargetPixel[1] < 0:
-        # out of bounds (bottom left)
         dy = height - startingTargetPixel[0]
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
@@ -103,8 +104,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (left)
     if startingTargetPixel[1] < 0:
-        # out of bounds (left)
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -115,8 +116,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (top)
     if startingTargetPixel[0] < 0:
-        # out of bounds (top)
         dy = startingTargetPixel[0] + macroblockSize
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -127,8 +128,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (right)
     if startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (right)
         dx = width - startingTargetPixel[1]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -139,8 +140,8 @@ def performMotionCompensationForEncoding(startingRefPixel, motionVector, referen
             ]
         return targetFrame
 
+    # out of bounds (bottom)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0]:
-        # out of bounds (bottom)
         dy = height - startingTargetPixel[0]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -213,8 +214,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
     """
     startingTargetPixel = (startingRefPixel[0] + motionVector[0], startingRefPixel[1] + motionVector[1])
 
+    # out of bounds (top left)
     if startingTargetPixel[0] < 0 and startingTargetPixel[1] < 0:
-        # out of bounds (top left)
         dy = startingTargetPixel[0] + macroblockSize
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
@@ -235,9 +236,9 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (bottom right)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and \
             startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (bottom right)
         dy, dx = height - startingTargetPixel[0], width - startingTargetPixel[1]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -257,8 +258,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (top right)
     if startingTargetPixel[0] < 0 and startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (top right)
         dy = startingTargetPixel[0] + macroblockSize
         dx = width - startingTargetPixel[1]
         targetFrame[
@@ -279,8 +280,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (bottom left)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0] and startingTargetPixel[1] < 0:
-        # out of bounds (bottom left)
         dy = height - startingTargetPixel[0]
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
@@ -301,8 +302,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (left)
     if startingTargetPixel[1] < 0:
-        # out of bounds (left)
         dx = startingTargetPixel[1] + macroblockSize
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -322,8 +323,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (top)
     if startingTargetPixel[0] < 0:
-        # out of bounds (top)
         dy = startingTargetPixel[0] + macroblockSize
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -343,8 +344,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (right)
     if startingTargetPixel[1] + macroblockSize > targetFrame.shape[1]:
-        # out of bounds (right)
         dx = width - startingTargetPixel[1]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
@@ -364,8 +365,8 @@ def performMotionCompensationForDecoding(startingRefPixel, motionVector, referen
              ]
         return targetFrame
 
+    # out of bounds (bottom)
     if startingTargetPixel[0] + macroblockSize > targetFrame.shape[0]:
-        # out of bounds (bottom)
         dy = height - startingTargetPixel[0]
         targetFrame[
         startingTargetPixel[0]:startingTargetPixel[0] + macroblockSize,
