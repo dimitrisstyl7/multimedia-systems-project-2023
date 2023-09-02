@@ -1,5 +1,4 @@
 from huffman import *
-from imageFunction import *
 from videoFunction import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'
@@ -75,31 +74,24 @@ def videoDecoder():
 
     # Huffman decoding
     # Decode the error frames sequence
-    frames = decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height)
-
+    decodedSeqErrorImages = decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height)
     print(
-        f'The video has {len(frames)} frames, a height of {height} pixels, a width of {width} pixels and a framerate of'
-        f' {fps} frames per second.')
-
-    firstFrameFlag = True
-
-    decodedFrames = []
+        f'The video has {len(decodedSeqErrorImages)} frames, a height of {height} pixels, a width of {width} pixels '
+        f'and a framerate of {fps} frames per second.')
 
     # Recreate the frames of the original video
+    decodedFrames = []
+    firstFrameFlag = True
     referenceFrame = None
-    i = 0
-    for frame in frames:
+    for errorImage in decodedSeqErrorImages:
         if firstFrameFlag:
-            decodedFrames.append(frame)
-            saveImage(frame, str(i) + '.jpg')
-            referenceFrame = frame
+            decodedFrames.append(errorImage)
+            referenceFrame = errorImage
             firstFrameFlag = False
         else:
-            decodedFrame = referenceFrame + frame  # Add frame to referenceFrame
-            saveImage(decodedFrame, str(i) + '.jpg')
+            decodedFrame = referenceFrame + errorImage  # Add errorImage to referenceFrame
             decodedFrames.append(decodedFrame)
             referenceFrame = decodedFrame
-        i += 1
 
     # Convert the list to a numpy array
     decodedFrames = np.array(decodedFrames, dtype='uint8')
