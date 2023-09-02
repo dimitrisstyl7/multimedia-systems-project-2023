@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 from progressBar import *
 
 macroblockSize = 64
@@ -145,7 +146,7 @@ def executeFullSearch(referenceFrame, targetMacroblock, targetPixel, macroblockL
 
     for row in range(startingPixel[0], endingPixel[0] + 1):
         for col in range(startingPixel[1], endingPixel[1] + 1):
-            referenceMacroblock = constructTempReferenceMacroblock(referenceFrame, row, col, macroblockLevelSize)
+            referenceMacroblock = constructReferenceMacroblock(referenceFrame, row, col, macroblockLevelSize)
             SAD_values.append(calculateSADValue(referenceMacroblock, targetMacroblock))
             pixels.append((row, col))
 
@@ -157,7 +158,10 @@ def executeFullSearch(referenceFrame, targetMacroblock, targetPixel, macroblockL
     return [motionVector, minSAD]
 
 
-def constructTempReferenceMacroblock(referenceFrame, row, col, macroblockLevelSize):
+def constructReferenceMacroblock(referenceFrame, row, col, macroblockLevelSize):
+    """
+        Construct the reference macroblock from the reference frame.
+    """
     return referenceFrame[row: row + macroblockLevelSize, col: col + macroblockLevelSize]
 
 
@@ -178,54 +182,65 @@ def getSADErrorValues(targetFrameInMacroblocks, referenceFrameInMacroblocks, noO
         Because k is always smaller than the macroblock size, the search window is always to the nearest neighbors of
         the current macroblock.
     """
-    matchedMacroblocks = []  # matchedMacroblocks list form: [(i, j), SAD_value] where (i, j) is the coordinate
-    # of the matched macroblock in the reference frame
+    # matchedMacroblocks list form: [(i, j), SAD_value] where (i, j) is the coordinate of the matched macroblock in
+    # the reference frame
+    matchedMacroblocks = []
 
     for i in range(noOfRows):
         for j in range(noOfCols):
-            neighRefMacroblocksCoord = [(i, j)]  # Contains the coordinates of the reference macroblocks that are
-            # neighbors of the target macroblock
-            neighRefSAD_values = \
-                [calculateSADValue(targetFrameInMacroblocks[i][j],
-                                   referenceFrameInMacroblocks[i][j])]  # Contains the SAD
-            # values of the reference macroblocks that are neighbors of the target macroblock
+            # neighRefMacroblocksCoord contains the coordinates of the reference macroblocks that are neighbors of
+            # the target macroblock
+            neighRefMacroblocksCoord = [(i, j)]
 
-            if j > 0:  # left reference macroblock
+            # neighRefSAD_values contains the SAD values of the reference macroblocks that are neighbors of the
+            # target macroblock
+            neighRefSAD_values = \
+                [calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i][j])]
+
+            # left reference macroblock
+            if j > 0:
                 neighRefMacroblocksCoord.append((i, j - 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i][j - 1]))
 
-            if j < noOfCols - 1:  # right reference macroblock
+            # right reference macroblock
+            if j < noOfCols - 1:
                 neighRefMacroblocksCoord.append((i, j + 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i][j + 1]))
 
-            if i > 0:  # top reference macroblock
+            # top reference macroblock
+            if i > 0:
                 neighRefMacroblocksCoord.append((i - 1, j))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i - 1][j]))
 
-            if i < noOfRows - 1:  # bottom reference macroblock
+            # bottom reference macroblock
+            if i < noOfRows - 1:
                 neighRefMacroblocksCoord.append((i + 1, j))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i + 1][j]))
 
-            if i > 0 and j > 0:  # top-left reference macroblock
+            # top-left reference macroblock
+            if i > 0 and j > 0:
                 neighRefMacroblocksCoord.append((i - 1, j - 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i - 1][j - 1]))
 
-            if i > 0 and j < noOfCols - 1:  # top-right reference macroblock
+            # top-right reference macroblock
+            if i > 0 and j < noOfCols - 1:
                 neighRefMacroblocksCoord.append((i - 1, j + 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i - 1][j + 1]))
 
-            if i < noOfRows - 1 and j > 0:  # bottom-left reference macroblock
+            # bottom-left reference macroblock
+            if i < noOfRows - 1 and j > 0:
                 neighRefMacroblocksCoord.append((i + 1, j - 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i + 1][j - 1]))
 
-            if i < noOfRows - 1 and j < noOfCols - 1:  # bottom-right reference macroblock
+            # bottom-right reference macroblock
+            if i < noOfRows - 1 and j < noOfCols - 1:
                 neighRefMacroblocksCoord.append((i + 1, j + 1))
                 neighRefSAD_values.append(
                     calculateSADValue(targetFrameInMacroblocks[i][j], referenceFrameInMacroblocks[i + 1][j + 1]))
@@ -242,8 +257,9 @@ def calculateMotionVectors(matchedMacroblocks, macroblockLevelSize, noOfCols):
     """
         Calculate the motion vectors for each matched macroblock.
     """
-    MVnSAD = []  # MVnSAD list form: [ [MV_for_i_matchedMacroblock, SAD_for_i_matchedMacroblock],
+    # MVnSAD list form: [ [MV_for_i_matchedMacroblock, SAD_for_i_matchedMacroblock],
     # [MV_for_i+1_matchedMacroblock, SAD_for_i+1_matchedMacroblock], ... ]
+    MVnSAD = []
 
     for i in range(len(matchedMacroblocks)):
         # Find the coordinates of the target macroblock in a frame (noOfCol x noOfRows)
