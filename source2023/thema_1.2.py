@@ -42,9 +42,9 @@ def videoEncoder():
 
     # Calculate the sequence error images
     seqErrorImages = calculateSeqErrorImages(frames, motionCompensatedFrames)
-    createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorFrames.avi')
+    createVideoOutput(seqErrorImages, width, height, fps, 'thema_1_2_seqErrorImages.avi')
 
-    # ------------------------------------- Huffman encoding -------------------------------------#
+    # ------------------------------------- Huffman encoding ------------------------------------- #
     # Create the Huffman tree for the Motion Vectors
     huffmanTreeVectors = createHuffmanTreeVector(motionVectors)
     print('\tHuffman tree created for the vectors successfully!')
