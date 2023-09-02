@@ -27,9 +27,8 @@ def videoEncoder():
     createVideoOutput(frames, width, height, fps, 'thema_1_1_originalGrayScaleVideo.avi')
     print('Original grayscale video exported successfully!')
 
-    # Add all the frames to the original frames list
-    originalFrames = [frames]
-    H = entropyScore(originalFrames)
+    # Calculate the entropy of the original grayscale video
+    H = entropyScore(frames)
     print('Entropy of the original grayscale video is: ', H)
 
     # Create the video of the error frames sequence
@@ -87,19 +86,19 @@ def videoDecoder():
     decodedFrames = []
 
     # Recreate the frames of the original video
-    prevFrame = None
+    referenceFrame = None
     i = 0
     for frame in frames:
         if firstFrameFlag:
             decodedFrames.append(frame)
             saveImage(frame, str(i) + '.jpg')
-            prevFrame = frame
+            referenceFrame = frame
             firstFrameFlag = False
         else:
-            decodedFrame = prevFrame + frame  # Add frame to prevFrame
+            decodedFrame = referenceFrame + frame  # Add frame to referenceFrame
             saveImage(decodedFrame, str(i) + '.jpg')
             decodedFrames.append(decodedFrame)
-            prevFrame = decodedFrame
+            referenceFrame = decodedFrame
         i += 1
 
     # Convert the list to a numpy array
