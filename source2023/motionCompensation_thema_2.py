@@ -10,7 +10,6 @@ def motionCompensation(frames, motionVectors, width, height):
     motionCompensatedFrames = [frames[0]]  # I frame
     backgroundFrame = frames[0]  # I frame
 
-    progressBar(0, len(frames), 'Creating Motion Compensation Frames: ', 'Motion Compensation Frames Created!')
     for i in range(1, len(frames)):
         # Get the reference (previous) and target (current) frame
         referenceFrame = frames[i - 1]
@@ -29,7 +28,6 @@ def motionCompensation(frames, motionVectors, width, height):
             targetFrame = motionCompensationOnSpecificFrame(motionVector, targetFrame, backgroundFrame,
                                                             startingRefPixel, width, height)
         motionCompensatedFrames.append(targetFrame)
-        progressBar(i + 1, len(frames), 'Creating Motion Compensation Frames: ', 'Motion Compensation Frames Created!')
     return motionCompensatedFrames
 
 
