@@ -23,17 +23,15 @@ def algorithm():
     createVideoOutput(frames, width, height, fps, 'thema_2_originalGrayScaleVideo.avi')
     print('Original grayscale video exported successfully!')
 
-    # Calculate the entropy of the original grayscale video
-    print('Entropy of the original grayscale video is: ', entropyScore(frames))
-
     # Calculate the motion vectors using the hierarchical search algorithm
-    motionVectors = hierarchicalSearch(frames)
-    saveEncodedData(motionVectors, 'mv.pkl')
-    # motionVectors = readEncodedData('mv.pkl')
+    # motionVectors = hierarchicalSearch(frames)
+    # saveEncodedData(motionVectors, 'mv.pkl')
+    motionVectors = readEncodedData('mv.pkl')
 
     # Calculate the motion compensated frames
     motionCompensatedFrames = motionCompensation(frames, motionVectors, width, height)
-    createVideoOutput(motionCompensatedFrames, width, height, fps, 'thema_2_motionCompensatedFrames.avi')
+    createVideoOutput(motionCompensatedFrames, width, height, fps, 'thema_2_final.avi')
+    print('Item disappeared successfully!')
 
 
 if __name__ == '__main__':
