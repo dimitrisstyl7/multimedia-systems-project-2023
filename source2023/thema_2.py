@@ -24,9 +24,7 @@ def algorithm():
     print('Original grayscale video exported successfully!')
 
     # Calculate the motion vectors using the hierarchical search algorithm
-    # motionVectors = hierarchicalSearch(frames)
-    # saveEncodedData(motionVectors, 'mv.pkl')
-    motionVectors = readEncodedData('mv.pkl')
+    motionVectors = hierarchicalSearch(frames)
 
     # Calculate the motion compensated frames
     motionCompensatedFrames = motionCompensation(frames, motionVectors, width, height)
