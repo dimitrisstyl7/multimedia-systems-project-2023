@@ -66,8 +66,8 @@ def decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height):
     """
     reverseTable = {code: symbol for symbol, code in huffmanTable.items()}
     decodedSeqErrorImages = []
-    total_frames = len(encodedSeqErrorImages)
-    progressBar(0, total_frames, 'Decoding the error frames sequence:', 'Decoded the error frames sequence!')
+    progressBar(0, len(encodedSeqErrorImages), 'Decoding the error frames sequence:',
+                'Decoded the error frames sequence!')
     for i, encodedErrorImage in enumerate(encodedSeqErrorImages):
         decodedErrorImage = []
         currentCode = ""
@@ -78,5 +78,6 @@ def decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height):
                 currentCode = ""
         decodedErrorImage = np.array(decodedErrorImage, dtype='uint8').reshape((height, width))
         decodedSeqErrorImages.append(np.array(decodedErrorImage))
-        progressBar(i + 1, total_frames, 'Decoding the error frames sequence:', 'Decoded the error frames sequence!')
+        progressBar(i + 1, len(encodedSeqErrorImages), 'Decoding the error frames sequence:',
+                    'Decoded the error frames sequence!')
     return decodedSeqErrorImages
