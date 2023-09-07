@@ -1,7 +1,3 @@
-import numpy as np
-
-from progressBar import *
-
 macroblockSize = 64
 
 
@@ -12,9 +8,7 @@ def motionCompensation(frames, motionVectors, width, height):
 
     for i in range(1, len(frames)):
         # Get the reference (previous) and target (current) frame
-        referenceFrame = frames[i - 1]
         targetFrame = frames[i]
-        # targetFrame = np.zeros_like(referenceFrame)
         idxOfVectorsForCurrFrame = i - 1
         noOfMacroblocks = len(motionVectors[idxOfVectorsForCurrFrame])
 
