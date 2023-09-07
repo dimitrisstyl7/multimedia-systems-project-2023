@@ -1,12 +1,11 @@
+from hierarchicalSearch import hierarchicalSearch
+from motionCompensation_thema_2 import motionCompensation
 from videoFunction import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_2.avi'
 
-def videoEncoder():
-    """
-            Encode the video
-        """
-    # ------------------------------- Load Video Properties -------------------------------- #
+
+def algorithm():
     # Read the video
     frames, videoProperties = openVideo(videoPath)
     print(
@@ -21,10 +20,21 @@ def videoEncoder():
     fps = videoProperties[3]
 
     # The grayscale original video
-    createVideoOutput(frames, width, height, fps, 'thema_1_2_originalGrayScaleVideo.avi')
+    createVideoOutput(frames, width, height, fps, 'thema_2_originalGrayScaleVideo.avi')
     print('Original grayscale video exported successfully!')
+
+    # Calculate the entropy of the original grayscale video
+    print('Entropy of the original grayscale video is: ', entropyScore(frames))
+
+    # Calculate the motion vectors using the hierarchical search algorithm
+    motionVectors = hierarchicalSearch(frames)
+    saveEncodedData(motionVectors, 'mv.pkl')
+    # motionVectors = readEncodedData('mv.pkl')
+
+    # Calculate the motion compensated frames
+    motionCompensatedFrames = motionCompensation(frames, motionVectors, width, height)
+    createVideoOutput(motionCompensatedFrames, width, height, fps, 'thema_2_motionCompensatedFrames.avi')
 
 
 if __name__ == '__main__':
-    entropy1 = videoEncoder()
-    #entropy2 = videoDecoder()
+    algorithm()
