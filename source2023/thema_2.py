@@ -1,3 +1,5 @@
+import os
+
 from hierarchicalSearch import hierarchicalSearch
 from motionCompensation_thema_2 import motionCompensation
 from videoFunction import *
@@ -32,5 +34,13 @@ def algorithm():
     print('Item disappeared successfully!')
 
 
+def createFoldersIfNotExist():
+    if not os.path.exists('../auxiliary2023/OutputVideos'):
+        os.makedirs('../auxiliary2023/OutputVideos')
+    if not os.path.exists('../auxiliary2023/VideoProperties'):
+        os.makedirs('../auxiliary2023/VideoProperties')
+
+
 if __name__ == '__main__':
+    createFoldersIfNotExist()
     algorithm()

@@ -1,3 +1,5 @@
+import os
+
 from huffman import *
 from videoFunction import *
 
@@ -104,7 +106,15 @@ def videoDecoder():
     return H
 
 
+def createFoldersIfNotExist():
+    if not os.path.exists('../auxiliary2023/OutputVideos'):
+        os.makedirs('../auxiliary2023/OutputVideos')
+    if not os.path.exists('../auxiliary2023/VideoProperties'):
+        os.makedirs('../auxiliary2023/VideoProperties')
+
+
 if __name__ == '__main__':
+    createFoldersIfNotExist()
     entropy1 = videoEncoder()
     entropy2 = videoDecoder()
     if entropy1 == entropy2:
