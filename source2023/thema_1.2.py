@@ -1,7 +1,7 @@
 from hierarchicalSearch import hierarchicalSearch
 from huffman import *
 from huffmanVectors import *
-from motionCompensation import *
+from motionCompensation_thema_1_2 import *
 from videoFunction import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'

@@ -75,9 +75,6 @@ def videoDecoder():
     # Huffman decoding
     # Decode the error frames sequence
     decodedSeqErrorImages = decodeHuffman(encodedSeqErrorImages, huffmanTable, width, height)
-    print(
-        f'The video has {len(decodedSeqErrorImages)} frames, a height of {height} pixels, a width of {width} pixels '
-        f'and a framerate of {fps} frames per second.')
 
     # Recreate the frames of the original video
     decodedFrames = []
