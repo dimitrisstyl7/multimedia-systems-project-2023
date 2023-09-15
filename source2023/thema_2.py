@@ -35,6 +35,8 @@ def algorithm():
 
 
 def createFoldersIfNotExist():
+    if not os.path.exists('../auxiliary2023/OriginalVideos'):
+        os.makedirs('../auxiliary2023/OriginalVideos')
     if not os.path.exists('../auxiliary2023/OutputVideos'):
         os.makedirs('../auxiliary2023/OutputVideos')
     if not os.path.exists('../auxiliary2023/VideoProperties'):
