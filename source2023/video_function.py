@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from scipy.stats import entropy
 
-from imageFunction import calculateErrorImage
-from progressBar import progressBar
+from image_function import calculateErrorImage
+from progress_bar import progressBar
 
 
 def openVideo(file):

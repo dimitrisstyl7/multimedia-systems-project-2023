@@ -1,7 +1,7 @@
 import os
 
 from huffman import *
-from videoFunction import *
+from video_function import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'
 

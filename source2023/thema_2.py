@@ -1,8 +1,8 @@
 import os
 
-from hierarchicalSearch import hierarchicalSearch
-from motionCompensation_thema_2 import motionCompensation
-from videoFunction import *
+from hierarchical_search import hierarchicalSearch
+from motion_compensation_thema_2 import motionCompensation
+from video_function import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_2.avi'
 

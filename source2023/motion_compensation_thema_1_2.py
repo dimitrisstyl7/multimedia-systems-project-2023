@@ -1,6 +1,6 @@
 import numpy as np
 
-from progressBar import *
+from progress_bar import *
 
 macroblockSize = 64
 

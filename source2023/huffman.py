@@ -3,7 +3,7 @@ from heapq import *
 
 import numpy as np
 
-from progressBar import progressBar
+from progress_bar import progressBar
 
 
 def createHuffmanTree(seqErrorImages):

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from progressBar import *
+from progress_bar import *
 
 macroblockSize = 64
 radius = 32  # Search radius

@@ -1,10 +1,10 @@
 import os
 
-from hierarchicalSearch import hierarchicalSearch
+from hierarchical_search import hierarchicalSearch
 from huffman import *
-from huffmanVectors import *
-from motionCompensation_thema_1_2 import *
-from videoFunction import *
+from huffman_vectors import *
+from motion_compensation_thema_1_2 import *
+from video_function import *
 
 videoPath = '../auxiliary2023/OriginalVideos/thema_1.avi'
 
