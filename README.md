@@ -1,4 +1,4 @@
-# Multimedia Systems (2023) - Compression and Object Removal Project
+# Multimedia Systems (2023) - Compression and Object Removal
 
 ## Project Overview
 
