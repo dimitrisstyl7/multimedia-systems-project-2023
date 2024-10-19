@@ -12,8 +12,8 @@ This project is a team assignment for the "Multimedia Systems" course, offered i
 
 ## Course Information
 
-- **Institution:** University of Piraeus
-- **Department:** Department of Informatics
+- **Institution:** [University of Piraeus](https://www.unipi.gr/en/)
+- **Department:** [Department of Informatics](https://cs.unipi.gr/en/)
 - **Course:** Multimedia Systems (2023)
 - **Semester:** 6th
 
