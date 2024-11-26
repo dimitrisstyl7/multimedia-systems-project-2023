@@ -1,7 +1,6 @@
 # Multimedia Systems (2023) - Compression and Object Removal
 
 ## Project Overview
-
 This project is a team assignment for the "Multimedia Systems" course, offered in the 6th semester of the 2023 academic year at the University of Piraeus, Department of Informatics. This project focuses on video compression and object removal techniques using motion compensation. It is divided into two main tasks:
 
 1. **Lossless Compression of Video Frames**: Implement a lossless video compression algorithm based on error images and Huffman encoding. The task involves calculating and encoding the sequence of error images from a video where the first frame is an I-frame and the subsequent frames are P-frames. Motion compensation is not applied for the initial part of this task.
@@ -11,14 +10,12 @@ This project is a team assignment for the "Multimedia Systems" course, offered i
 3. **Object Removal from Video**: Utilize motion compensation to algorithmically remove an object from a video. The process involves identifying and removing the selected object from the video sequence by predicting frames without the object.
 
 ## Course Information
-
 - **Institution:** [University of Piraeus](https://www.unipi.gr/en/)
 - **Department:** [Department of Informatics](https://cs.unipi.gr/en/)
 - **Course:** Multimedia Systems (2023)
 - **Semester:** 6th
 
 ## Technologies Used
-
 - Python
 - **Libraries**: 
   - `opencv-python`
@@ -29,7 +26,6 @@ This project is a team assignment for the "Multimedia Systems" course, offered i
   - `pickle`
 
 ## Project Structure
-
 The repository is structured as follows:
 
 ```
@@ -51,9 +47,7 @@ The repository is structured as follows:
 - **`/docs`**: Contains the project's pdfs.
 
 ## Usage Examples
-
 ### Lossless Compression
-
 To encode and decode video frames without loss, run:
 
 ```bash
@@ -72,7 +66,6 @@ This script will process the input video, compute the error images, and encode t
   ![Thema 1.1 output image](./images/thema_1.1_output_image.png)
 
 ### Motion Compensation
-
 To compress video frames using motion compensation and hierarchical search, execute:
 
 ```bash
@@ -90,7 +83,6 @@ This script will compute motion vectors, encode them, and reconstruct the video 
   ![Thema 1.2 output image](./images/thema_1.2_output_image.png)
 
 ### Object Removal
-
 To remove an object from a video, run:
 
 ```bash
@@ -107,7 +99,6 @@ This script will remove the specified object from the video and save the resulti
   ![Thema 2 output image](./images/thema_2_output_image.png)
 
 ## Setup Instructions
-
 1. **Clone the repository**
 
 2. **Prepare input videos**:
@@ -119,7 +110,6 @@ This script will remove the specified object from the video and save the resulti
     Follow the usage examples to execute the scripts.
 
 ## Contributors
-
 <table>
   <tr>
     <td align="center"><a href="https://github.com/thkox"><img src="https://avatars.githubusercontent.com/u/79880468?v=4" width="100px;" alt="Theodoros Koxanoglou"/><br /><sub><b>Theodoros Koxanoglou</b></sub></a><br /></td>
@@ -128,6 +118,8 @@ This script will remove the specified object from the video and save the resulti
   </tr>
 </table>
 
-## License
+## Acknowledgments
+This project was developed as part of the "Multimedia Systems" course at the University of Piraeus. Contributions and feedback are always welcome!
 
+## License
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
